@@ -1,4 +1,4 @@
-<div class="<%=foo%>list">
+<div class="daeasourcelist">
     <cm-table>
         <nz-table #nzTable [nzBordered]="true" [nzAjaxData]="_dataSet" [nzTotal]="_total" [(nzPageIndex)]="queryParam.page" (nzPageIndexChange)="pageIndexChange($event)" nzShowTotal>
             <thead nz-thead>
@@ -7,7 +7,7 @@
                         <div>ID</div>
                     </th>
                     <th nz-th>
-                        <div>数据源名称</div>
+                        <div><%=fooDesc%>名称</div>
                     </th>
                     <th nz-th>
                         <div>类型</div>

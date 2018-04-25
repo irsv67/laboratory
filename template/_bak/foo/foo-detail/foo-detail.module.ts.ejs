@@ -1,0 +1,28 @@
+import { NgModule } from '@angular/core';
+import { FormsModule,ReactiveFormsModule} from '@angular/forms';
+import { RouterModule} from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { <%=Foo%>DetailService } from './<%=foo%>-detail.service';
+import { <%=Foo%>DetailComponent } from './<%=foo%>-detail.component';
+
+import { FormModule } from 'ng-cosmos-td-ui/src/base/form/form.module';
+import { ButtonModule } from 'ng-cosmos-td-ui/src/base/button/button.module';
+
+@NgModule({
+    declarations: [
+        <%=Foo%>DetailComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        RouterModule,
+        FormModule,
+        ButtonModule,
+        ReactiveFormsModule
+    ],
+    providers: [<%=Foo%>DetailService],
+    exports: [<%=Foo%>DetailComponent]
+})
+export class <%=Foo%>DetailModule {
+
+}

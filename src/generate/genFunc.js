@@ -1,21 +1,19 @@
 "use strict";
 const ejs_1 = require("ejs");
 const fs_1 = require("fs");
-const fs_2 = require("fs");
-const fs_3 = require("fs");
 class GenFunc {
     static renderFile(config) {
         let baseDir = "../../template/";
-        if (!fs_2.existsSync(baseDir + config.moduleName)) {
-            fs_3.mkdirSync(baseDir + config.moduleName);
+        if (!fs_1.existsSync(baseDir + config.moduleName)) {
+            fs_1.mkdirSync(baseDir + config.moduleName);
         }
         let subPathTemplateName = "";
         let subPathModuleName = "";
         if (config.subPathTail) {
             subPathTemplateName = config.templateName + config.subPathTail + "/";
             subPathModuleName = config.moduleName + config.subPathTail + "/";
-            if (!fs_2.existsSync(baseDir + config.moduleName + "/" + subPathModuleName)) {
-                fs_3.mkdirSync(baseDir + config.moduleName + "/" + subPathModuleName);
+            if (!fs_1.existsSync(baseDir + config.moduleName + "/" + subPathModuleName)) {
+                fs_1.mkdirSync(baseDir + config.moduleName + "/" + subPathModuleName);
             }
         }
         let dataObj = {};

@@ -1,0 +1,60 @@
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { <%=Foo%>HomeService } from '../<%=foo%>-home/<%=foo%>-home.service';
+import { dictionary } from '../../../../config/config.dictionary';
+@Component({
+    selector: '<%=foo%>-search',
+    templateUrl: './<%=foo%>-search.component.html',
+    styleUrls: ['./<%=foo%>-search.component.less'],
+    providers: [FormBuilder]
+})
+export class <%=Foo%>SearchComponent implements OnInit, OnDestroy {
+    validateForm: FormGroup;
+    status: any;//状态
+    metadataStatus: any;//状态默认
+    types: any;//类型
+    <%=foo%>Type: any;//类型默认
+    constructor(private fb: FormBuilder, private <%=foo%>HomeService: <%=Foo%>HomeService) {
+        this.information();
+    }
+    information(){
+        this.validateForm = this.fb.group({
+            <%=foo%>Name: [''],
+            <%=foo%>Type: [''],
+            metadataStatus: [''],
+        });
+        this.status = dictionary.statusSearch;
+        this.metadataStatus ="";
+        this.types = dictionary.dataSourceTypeSearch;
+        this.<%=foo%>Type = '';
+    }//初始数据
+    searchHandler() {
+        this.<%=foo%>HomeService.homeValue(this.validateForm.value);
+    }//查询
+    ngOnInit() {
+    }
+    resetForm() {
+        this.validateForm.reset();
+        setTimeout(() => {
+            this.information();
+        }, 0);
+        this.<%=foo%>HomeService.homeValue(this.validateForm.value);
+    }//重置
+    submitForm = ($event: any, value: any) => {
+        $event.preventDefault();
+        for (const key in this.validateForm.controls) {
+            this.validateForm.controls[key].markAsDirty();
+        }
+    };
+
+    getFormControl(name: any) {
+        return this.validateForm.controls[name];
+    }
+
+
+    ngOnDestroy() {
+
+    }
+
+}

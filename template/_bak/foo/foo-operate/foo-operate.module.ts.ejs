@@ -1,0 +1,26 @@
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { <%=Foo%>OperateService } from './<%=foo%>-operate.service';
+import { <%=Foo%>OperateComponent } from './<%=foo%>-operate.component';
+
+
+import { ButtonModule } from 'ng-cosmos-td-ui/src/base/button/button.module';
+
+@NgModule({
+    declarations: [
+        <%=Foo%>OperateComponent
+    ],
+    imports: [
+        FormsModule,
+        RouterModule,
+        CommonModule,
+        ButtonModule
+    ],
+    providers: [<%=Foo%>OperateService],
+    exports: [<%=Foo%>OperateComponent]
+})
+export class <%=Foo%>OperateModule {
+
+}
