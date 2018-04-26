@@ -16,8 +16,6 @@ let tmpConfig = {
     subPathTail: "",
     fileNameTail: "" //文件名后缀
 };
-let baseDir = "../../template/";
-let rootSrc = "tempSrc";
 let copy2 = function (fReadName, fWriteName) {
     let fRead = fs_1.createReadStream(fReadName);
     let fWrite = fs_1.createWriteStream(fWriteName);
@@ -37,32 +35,35 @@ let copy2 = function (fReadName, fWriteName) {
         // console.log('readline close...');
     });
 };
-let scanDirFunc = function (baseDir, curDir, root) {
-    //如果是跟目录，创建模板目录
-    if (root && !fs_1.existsSync(baseDir + tmpConfig.templateName)) {
-        fs_1.mkdirSync(baseDir + tmpConfig.templateName);
-    }
-    let dir = fs_1.readdirSync(baseDir + curDir);
+let scanDirFunc = function (curSrcDir, curDestDir, curFolder) {
+    let dir = fs_1.readdirSync(curSrcDir + curFolder);
     dir.forEach(function (item) {
-        let curSrcFile = baseDir + curDir + "/" + item;
+        let curSrcFile = curSrcDir + curFolder + "/" + item;
         let tmpFile = fs_1.statSync(curSrcFile);
-        let pathTemplate = (curSrcFile)
-            .replace(rootSrc, tmpConfig.templateName)
-            .split(tmpConfig.moduleName).join(tmpConfig.templateName);
-        // .replace(tmpConfig.moduleName, tmpConfig.templateName)
+        let curFolderDest = curFolder.split(tmpConfig.moduleName).join(tmpConfig.templateName);
+        let itemDest = item.split(tmpConfig.moduleName).join(tmpConfig.templateName);
+        let curDestFile = curDestDir + curFolderDest + "/" + itemDest;
         if (tmpFile.isDirectory()) {
-            if (!fs_1.existsSync(pathTemplate)) {
-                fs_1.mkdirSync(pathTemplate);
+            if (!fs_1.existsSync(curDestFile)) {
+                fs_1.mkdirSync(curDestFile);
             }
-            scanDirFunc(baseDir + curDir + "/", item, false);
+            scanDirFunc(curSrcDir + curFolder + "/", curDestDir + curFolderDest + "/", item);
         }
         else if (tmpFile.isFile()) {
             if (!item.endsWith(".js")) {
-                copy2(curSrcFile, pathTemplate + ".ejs");
-                console.log("copy file: " + pathTemplate + ".ejs");
+                copy2(curSrcFile, curDestFile + ".ejs");
+                console.log("copy file: " + curDestFile + ".ejs");
             }
         }
     });
 };
-scanDirFunc(baseDir, rootSrc, true);
+// let baseSrcDir = "../../template/";
+let baseSrcDir = "D:/_git_work/cosmos-builder/src/app/main/";
+// let baseDestDir = "../../template/";
+let baseDestDir = "D:/_gen_template/origin/";
+//如果是跟目录，创建模板目录
+if (!fs_1.existsSync(baseDestDir + tmpConfig.templateName)) {
+    fs_1.mkdirSync(baseDestDir + tmpConfig.templateName);
+}
+scanDirFunc(baseSrcDir, baseDestDir, tmpConfig.moduleName);
 //# sourceMappingURL=genFile4.js.map

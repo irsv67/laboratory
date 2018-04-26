@@ -29,49 +29,88 @@ tmpConfig = {
     fileNameTail: ""
 };
 
-let baseDir = "../../template/";
-let rootSrc = "foo";
+let dataObjNew = {
+    foo: "myTable",
+    Foo: "MyTable",
+    fooDesc: "连接配置",
+    columnList: [{
+        name: "id",
+        desc: "ID",
+        type: "normal"
+    }, {
+        name: "name",
+        desc: "连接配置名称",
+        type: "normal"
+    }, {
+        name: "type",
+        desc: "类型",
+        type: "normal"
+    }, {
+        name: "status",
+        desc: "状态",
+        type: "normal"
+    }, {
+        name: "description",
+        desc: "描述",
+        type: "normal"
+    }, {
+        name: "creator",
+        desc: "创建人",
+        type: "normal"
+    }, {
+        name: "createTime",
+        desc: "创建时间",
+        type: "normal"
+    }, {
+        name: "",
+        desc: "操作",
+        type: "control"
+    }],
+};
 
-let scanDirFunc = function (baseDir: string, curDir: string, root: boolean) {
-    //如果是跟目录，创建模板目录
-    if (root && !existsSync(baseDir + tmpConfig.moduleName)) {
-        mkdirSync(baseDir + tmpConfig.moduleName);
-    }
+for (let i = 0; i < dataObjNew.columnList.length; i++) {
+    let obj = dataObjNew.columnList[i];
 
-    let dir = readdirSync(baseDir + curDir);
+}
+
+let scanDirFunc = function (curSrcDir: string, curDestDir: string, curFolder: string) {
+
+    let dir = readdirSync(curSrcDir + curFolder);
     dir.forEach(function (item) {
-        let curSrcFile = baseDir + curDir + "/" + item;
+        let curSrcFile = curSrcDir + curFolder + "/" + item;
         let tmpFile = statSync(curSrcFile);
 
-        let pathTemplate = (curSrcFile)
-            .replace(rootSrc, tmpConfig.moduleName)
-            .split(tmpConfig.templateName).join(tmpConfig.moduleName)
-            .split('.ejs').join('');
-        // .replace(tmpConfig.moduleName, tmpConfig.moduleName)
+        let curFolderDest = curFolder.split(tmpConfig.templateName).join(tmpConfig.moduleName);
+        let itemDest = item.split(tmpConfig.templateName).join(tmpConfig.moduleName).split(".ejs").join("");
+        let curDestFile = curDestDir + curFolderDest + "/" + itemDest;
+
         if (tmpFile.isDirectory()) {
-            if (!existsSync(pathTemplate)) {
-                mkdirSync(pathTemplate);
+            if (!existsSync(curDestFile)) {
+                mkdirSync(curDestFile);
             }
-            scanDirFunc(baseDir + curDir + "/", item, false);
+            scanDirFunc(curSrcDir + curFolder + "/", curDestDir + curFolderDest + "/", item);
         } else if (tmpFile.isFile()) {
             if (!item.endsWith(".js")) {
-
-                let dataObj = {};
-                dataObj[tmpConfig.templateName] = tmpConfig.moduleName;
-                dataObj[tmpConfig.templateNameUpper] = tmpConfig.moduleNameUpper;
-                dataObj[tmpConfig.templateNameDesc] = tmpConfig.moduleNameDesc;
-
-                renderFile(curSrcFile, dataObj, function (err: Error, str: string) {
-                    writeFile(pathTemplate, str, function (err) {
+                renderFile(curSrcFile, dataObjNew, function (err: Error, str: string) {
+                    writeFile(curDestFile, str, function (err) {
                     });
-                    console.log("file generated: " + pathTemplate)
+                    console.log("file generated: " + curDestFile)
                 });
-
-                // copy2(curSrcFile, pathTemplate + ".ejs");
-                console.log("copy file: " + pathTemplate + ".ejs");
             }
         }
     })
 };
 
-scanDirFunc(baseDir, rootSrc, true);
+// let baseSrcDir = "D:/_gen_template/origin/";
+let baseSrcDir = "D:/_gen_template/change/";
+
+// let baseDestDir = "D:/_gen_template/tmp/";
+let baseDestDir = "D:/_git_work/cosmos-builder/src/app/main/";
+
+//如果目标目录不存在，创建目标目录
+if (!existsSync(baseDestDir + tmpConfig.moduleName)) {
+    mkdirSync(baseDestDir + tmpConfig.moduleName);
+}
+
+//扫描，从当前模板目录开始
+scanDirFunc(baseSrcDir, baseDestDir, tmpConfig.templateName);
