@@ -26,18 +26,18 @@ tmpConfig = {
     subPathTail: "",
     fileNameTail: ""
 };
-tmpConfig = {
-    templateName: "foo",
-    templateNameUpper: "Foo",
-    templateNameDesc: "fooDesc",
-    moduleName: "tdTag",
-    moduleNameUpper: "TdTag",
-    moduleNameDesc: "标签管理",
-    subPathTail: "",
-    fileNameTail: ""
-};
-// let dataObjNew = ConfigData.myTable;
-let dataObjNew = configData_1.ConfigData.tdTag;
+// tmpConfig = {
+//     templateName: "foo",
+//     templateNameUpper: "Foo",
+//     templateNameDesc: "fooDesc",
+//     moduleName: "tdTag",
+//     moduleNameUpper: "TdTag",
+//     moduleNameDesc: "标签管理",
+//     subPathTail: "",
+//     fileNameTail: ""
+// };
+let dataObjNew = configData_1.ConfigData.myTable;
+// let dataObjNew = ConfigData.tdTag;
 let scanDirFunc = function (curSrcDir, curDestDir, curFolder) {
     let dir = fs_1.readdirSync(curSrcDir + curFolder);
     dir.forEach(function (item) {
@@ -63,8 +63,8 @@ let scanDirFunc = function (curSrcDir, curDestDir, curFolder) {
         }
     });
 };
-// let baseSrcDir = "D:/_gen_template/origin/";
-let baseSrcDir = "D:/_gen_template/change/";
+let baseSrcDir = "D:/_gen_template/origin/";
+// let baseSrcDir = "D:/_gen_template/change/";
 // let baseDestDir = "D:/_gen_template/tmp/";
 let baseDestDir = "D:/_git_work/cosmos-builder/src/app/main/";
 //如果目标目录不存在，创建目标目录

@@ -30,19 +30,19 @@ tmpConfig = {
     fileNameTail: ""
 };
 
-tmpConfig = {
-    templateName: "foo",
-    templateNameUpper: "Foo",
-    templateNameDesc: "fooDesc",
-    moduleName: "tdTag",
-    moduleNameUpper: "TdTag",
-    moduleNameDesc: "标签管理",
-    subPathTail: "",
-    fileNameTail: ""
-};
+// tmpConfig = {
+//     templateName: "foo",
+//     templateNameUpper: "Foo",
+//     templateNameDesc: "fooDesc",
+//     moduleName: "tdTag",
+//     moduleNameUpper: "TdTag",
+//     moduleNameDesc: "标签管理",
+//     subPathTail: "",
+//     fileNameTail: ""
+// };
 
-// let dataObjNew = ConfigData.myTable;
-let dataObjNew = ConfigData.tdTag;
+let dataObjNew = ConfigData.myTable;
+// let dataObjNew = ConfigData.tdTag;
 
 let scanDirFunc = function (curSrcDir: string, curDestDir: string, curFolder: string) {
 
@@ -72,8 +72,8 @@ let scanDirFunc = function (curSrcDir: string, curDestDir: string, curFolder: st
     })
 };
 
-// let baseSrcDir = "D:/_gen_template/origin/";
-let baseSrcDir = "D:/_gen_template/change/";
+let baseSrcDir = "D:/_gen_template/origin/";
+// let baseSrcDir = "D:/_gen_template/change/";
 
 // let baseDestDir = "D:/_gen_template/tmp/";
 let baseDestDir = "D:/_git_work/cosmos-builder/src/app/main/";
