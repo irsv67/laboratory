@@ -16,6 +16,16 @@ let tmpConfig = {
     subPathTail: "",
     fileNameTail: "" //文件名后缀
 };
+tmpConfig = {
+    templateName: "foo",
+    templateNameUpper: "Foo",
+    templateNameDesc: "fooDesc",
+    moduleName: "myTable",
+    moduleNameUpper: "MyTable",
+    moduleNameDesc: "连接配置",
+    subPathTail: "",
+    fileNameTail: ""
+};
 let copy2 = function (fReadName, fWriteName) {
     let fRead = fs_1.createReadStream(fReadName);
     let fWrite = fs_1.createWriteStream(fWriteName);

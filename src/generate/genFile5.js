@@ -1,6 +1,7 @@
 "use strict";
 const ejs_1 = require("ejs");
 const fs_1 = require("fs");
+const configData_1 = require("./configData");
 /**
  * 类功能描述：根据模板生成代码
  */
@@ -19,53 +20,14 @@ tmpConfig = {
     templateName: "foo",
     templateNameUpper: "Foo",
     templateNameDesc: "fooDesc",
-    moduleName: "myTable",
-    moduleNameUpper: "MyTable",
-    moduleNameDesc: "连接配置",
+    moduleName: "tdTag",
+    moduleNameUpper: "TdTag",
+    moduleNameDesc: "标签管理",
     subPathTail: "",
     fileNameTail: ""
 };
-let dataObjNew = {
-    foo: "myTable",
-    Foo: "MyTable",
-    fooDesc: "连接配置",
-    columnList: [{
-            name: "id",
-            desc: "ID",
-            type: "normal"
-        }, {
-            name: "name",
-            desc: "连接配置名称",
-            type: "normal"
-        }, {
-            name: "type",
-            desc: "类型",
-            type: "normal"
-        }, {
-            name: "status",
-            desc: "状态",
-            type: "normal"
-        }, {
-            name: "description",
-            desc: "描述",
-            type: "normal"
-        }, {
-            name: "creator",
-            desc: "创建人",
-            type: "normal"
-        }, {
-            name: "createTime",
-            desc: "创建时间",
-            type: "normal"
-        }, {
-            name: "",
-            desc: "操作",
-            type: "control"
-        }],
-};
-for (let i = 0; i < dataObjNew.columnList.length; i++) {
-    let obj = dataObjNew.columnList[i];
-}
+// let dataObjNew = ConfigData.myTable;
+let dataObjNew = configData_1.ConfigData.tdTag;
 let scanDirFunc = function (curSrcDir, curDestDir, curFolder) {
     let dir = fs_1.readdirSync(curSrcDir + curFolder);
     dir.forEach(function (item) {
