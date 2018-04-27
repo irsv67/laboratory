@@ -34,10 +34,6 @@ ConfigData.myTable = {
             name: "createTime",
             desc: "创建时间",
             type: "normal"
-        }, {
-            name: "",
-            desc: "操作",
-            type: "control"
         }],
     formArray: [
         {

@@ -23,6 +23,17 @@ tmpConfig = {
     templateName: "foo",
     templateNameUpper: "Foo",
     templateNameDesc: "fooDesc",
+    moduleName: "myTable",
+    moduleNameUpper: "MyTable",
+    moduleNameDesc: "连接配置",
+    subPathTail: "",
+    fileNameTail: ""
+};
+
+tmpConfig = {
+    templateName: "foo",
+    templateNameUpper: "Foo",
+    templateNameDesc: "fooDesc",
     moduleName: "tdTag",
     moduleNameUpper: "TdTag",
     moduleNameDesc: "标签管理",

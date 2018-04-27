@@ -26,6 +26,16 @@ tmpConfig = {
     subPathTail: "",
     fileNameTail: ""
 };
+tmpConfig = {
+    templateName: "foo",
+    templateNameUpper: "Foo",
+    templateNameDesc: "fooDesc",
+    moduleName: "tdTag",
+    moduleNameUpper: "TdTag",
+    moduleNameDesc: "标签管理",
+    subPathTail: "",
+    fileNameTail: ""
+};
 let copy2 = function (fReadName, fWriteName) {
     let fRead = fs_1.createReadStream(fReadName);
     let fWrite = fs_1.createWriteStream(fWriteName);
@@ -33,12 +43,26 @@ let copy2 = function (fReadName, fWriteName) {
         input: fRead,
     });
     let index = 1;
+    let passCode = false;
     objReadline.on('line', (line) => {
-        let tmp = line.split(tmpConfig.moduleName).join('<%=' + tmpConfig.templateName + '%>')
-            .split(tmpConfig.moduleNameUpper).join('<%=' + tmpConfig.templateNameUpper + '%>')
-            .split(tmpConfig.moduleNameDesc).join('<%=' + tmpConfig.templateNameDesc + '%>');
-        fWrite.write(tmp + os_1.EOL); // 下一行
-        // console.log(index, line);
+        let tmp = '';
+        if (line.indexOf('include(') != -1) {
+            tmp = line.split('<!--').join('<%- ')
+                .split('-->').join(' %>');
+            fWrite.write(line + os_1.EOL);
+            fWrite.write(tmp + os_1.EOL);
+            passCode = true;
+        }
+        else if (line.indexOf('include_end') != -1) {
+            fWrite.write(line + os_1.EOL);
+            passCode = false;
+        }
+        else if (!passCode) {
+            tmp = line.split(tmpConfig.moduleName).join('<%=' + tmpConfig.templateName + '%>')
+                .split(tmpConfig.moduleNameUpper).join('<%=' + tmpConfig.templateNameUpper + '%>')
+                .split(tmpConfig.moduleNameDesc).join('<%=' + tmpConfig.templateNameDesc + '%>');
+            fWrite.write(tmp + os_1.EOL);
+        }
         index++;
     });
     objReadline.on('close', () => {
