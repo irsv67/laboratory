@@ -1,5 +1,9 @@
 "use strict";
 const mysql_1 = require("mysql");
+/**
+ * 公共查询后台
+ * @type {Connection}
+ */
 let connection = mysql_1.createConnection({
     host: 'localhost',
     user: 'root',

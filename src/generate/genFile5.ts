@@ -41,8 +41,20 @@ tmpConfig = {
 //     fileNameTail: ""
 // };
 
-let dataObjNew = ConfigData.myTable;
+tmpConfig = {
+    templateName: "testSingle",
+    templateNameUpper: "TestSingle",
+    templateNameDesc: "testSingleDesc",
+    moduleName: "first",
+    moduleNameUpper: "First",
+    moduleNameDesc: "首个",
+    subPathTail: "",
+    fileNameTail: ""
+};
+
+// let dataObjNew = ConfigData.myTable;
 // let dataObjNew = ConfigData.tdTag;
+let dataObjNew = ConfigData.testSingle;
 
 let scanDirFunc = function (curSrcDir: string, curDestDir: string, curFolder: string) {
 
@@ -75,8 +87,8 @@ let scanDirFunc = function (curSrcDir: string, curDestDir: string, curFolder: st
 let baseSrcDir = "D:/_gen_template/origin/";
 // let baseSrcDir = "D:/_gen_template/change/";
 
-// let baseDestDir = "D:/_gen_template/tmp/";
-let baseDestDir = "D:/_git_work/cosmos-builder/src/app/main/";
+let baseDestDir = "D:/_test/testZorro/src/app/";
+// let baseDestDir = "D:/_git_work/cosmos-builder/src/app/main/";
 
 //如果目标目录不存在，创建目标目录
 if (!existsSync(baseDestDir + tmpConfig.moduleName)) {

@@ -102,5 +102,10 @@ ConfigData.tdTag = {
             "type": "normal"
         }, { "name": "source", "desc": "标签来源", "type": "normal" }, { "name": "status", "desc": "状态", "type": "normal" }]
 };
+ConfigData.testSingle = {
+    testSingle: "first",
+    TestSingle: "First",
+    testSingleDesc: "首个"
+};
 exports.ConfigData = ConfigData;
 //# sourceMappingURL=configData.js.map

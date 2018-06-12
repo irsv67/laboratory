@@ -1,5 +1,9 @@
 "use strict";
 const mysql_1 = require("mysql");
+/**
+ * demo class
+ * @type {Connection}
+ */
 let connection = mysql_1.createConnection({
     host: 'localhost',
     user: 'root',

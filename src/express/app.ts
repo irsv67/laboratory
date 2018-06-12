@@ -1,5 +1,8 @@
 import {createConnection} from "mysql";
-
+/**
+ * demo class
+ * @type {Connection}
+ */
 let connection = createConnection({
     host: 'localhost',
     user: 'root',

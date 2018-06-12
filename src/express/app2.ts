@@ -1,5 +1,8 @@
 import {createConnection} from "mysql";
-
+/**
+ * 公共查询后台
+ * @type {Connection}
+ */
 let connection = createConnection({
     host: 'localhost',
     user: 'root',

@@ -36,6 +36,16 @@ tmpConfig = {
     subPathTail: "",
     fileNameTail: ""
 };
+tmpConfig = {
+    templateName: "testSingle",
+    templateNameUpper: "TestSingle",
+    templateNameDesc: "testSingleDesc",
+    moduleName: "main",
+    moduleNameUpper: "Main",
+    moduleNameDesc: "主页",
+    subPathTail: "",
+    fileNameTail: ""
+};
 let copy2 = function (fReadName, fWriteName) {
     let fRead = fs_1.createReadStream(fReadName);
     let fWrite = fs_1.createWriteStream(fWriteName);
@@ -91,8 +101,8 @@ let scanDirFunc = function (curSrcDir, curDestDir, curFolder) {
         }
     });
 };
-// let baseSrcDir = "../../template/";
-let baseSrcDir = "D:/_git_work/cosmos-builder/src/app/main/";
+let baseSrcDir = "D:/_test/testZorro/src/app/";
+// let baseSrcDir = "D:/_git_work/cosmos-builder/src/app/main/";
 // let baseDestDir = "../../template/";
 let baseDestDir = "D:/_gen_template/origin/";
 //如果是跟目录，创建模板目录

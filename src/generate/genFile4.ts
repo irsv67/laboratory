@@ -41,6 +41,17 @@ tmpConfig = {
     fileNameTail: ""
 };
 
+tmpConfig = {
+    templateName: "testSingle",
+    templateNameUpper: "TestSingle",
+    templateNameDesc: "testSingleDesc",
+    moduleName: "main",
+    moduleNameUpper: "Main",
+    moduleNameDesc: "主页",
+    subPathTail: "",
+    fileNameTail: ""
+};
+
 let copy2 = function (fReadName, fWriteName) {
 
     let fRead = createReadStream(fReadName);
@@ -105,8 +116,8 @@ let scanDirFunc = function (curSrcDir: string, curDestDir: string, curFolder: st
     })
 };
 
-// let baseSrcDir = "../../template/";
-let baseSrcDir = "D:/_git_work/cosmos-builder/src/app/main/";
+let baseSrcDir = "D:/_test/testZorro/src/app/";
+// let baseSrcDir = "D:/_git_work/cosmos-builder/src/app/main/";
 
 // let baseDestDir = "../../template/";
 let baseDestDir = "D:/_gen_template/origin/";

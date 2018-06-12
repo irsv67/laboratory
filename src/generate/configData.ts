@@ -102,4 +102,10 @@ export class ConfigData {
             "type": "normal"
         }, {"name": "source", "desc": "标签来源", "type": "normal"}, {"name": "status", "desc": "状态", "type": "normal"}]
     }
+
+    public static testSingle = {
+        testSingle: "first",
+        TestSingle: "First",
+        testSingleDesc: "首个"
+    }
 }
