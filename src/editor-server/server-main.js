@@ -155,6 +155,77 @@ router.post('/addComp', function (req, res) {
         status: "success"
     }));
 });
+// ==========================
+router.post('/createPage', function (req, res) {
+    let pageName = req.body.pageName;
+    let pageNameUpper = '';
+    let tmpArray = pageName.split('-');
+    for (var i = 0; i < tmpArray.length; i++) {
+        var obj = tmpArray[i];
+        pageNameUpper += obj.charAt(0).toUpperCase() + obj.substring(1);
+    }
+    console.log('==pageName==:' + pageName);
+    console.log('==pageNameUpper==:' + pageNameUpper);
+    if (!fs_1.existsSync(businessService.base_path)) {
+        fs_1.mkdirSync(businessService.base_path);
+    }
+    let dir_path = businessService.base_path + '/' + pageName;
+    if (!fs_1.existsSync(dir_path)) {
+        fs_1.mkdirSync(dir_path);
+    }
+    let file_1 = '/' + pageName + '/' + pageName + '.component.html';
+    let file_2 = '/' + pageName + '/' + pageName + '.component.less';
+    let file_3 = '/' + pageName + '/' + pageName + '.component.ts';
+    let file_4 = '/' + pageName + '/' + pageName + '.module.ts';
+    let file_5 = '/' + pageName + '/' + pageName + '.service.ts';
+    let file_6 = '/' + pageName + '/' + pageName + '.routing.ts';
+    let str_3 = businessService.getCompStr(pageName, pageNameUpper);
+    let str_4 = businessService.getModuleStr(pageName, pageNameUpper);
+    let str_5 = businessService.getServiceStr(pageName, pageNameUpper);
+    let str_6 = businessService.getRoutingStr(pageName, pageNameUpper);
+    fs_1.writeFileSync(businessService.base_path + file_1, 'welcom!');
+    fs_1.writeFileSync(businessService.base_path + file_2, '');
+    fs_1.writeFileSync(businessService.base_path + file_3, str_3);
+    fs_1.writeFileSync(businessService.base_path + file_4, str_4);
+    fs_1.writeFileSync(businessService.base_path + file_5, str_5);
+    fs_1.writeFileSync(businessService.base_path + file_6, str_6);
+    let selectSql = `select count(*) as count from ud_page where name = '${pageName}'`;
+    let updateSql = `INSERT
+    INTO
+    ud_page
+    (
+        name,
+        html_url,
+        style_url,
+        script_url,
+        module_url,
+        service_url,
+        url
+    )
+    VALUES
+    (
+        '${pageName}',
+        '${file_1}',
+        '${file_2}',
+        '${file_3}',
+        '${file_4}',
+        '${file_5}',
+        'aaa'
+    );`;
+    let bbb = 1;
+    console.log(bbb);
+    connection.query(selectSql, function (error, results, fields) {
+        let count = results[0].count;
+        if (count === 0) {
+            connection.query(updateSql, function (error, results, fields) {
+                console.log('affectedRows:' + results.affectedRows);
+            });
+        }
+    });
+    res.send(JSON.stringify({
+        status: "success"
+    }));
+});
 // 將路由套用至應用程式
 app.use('/express', router);
 let server = app.listen(3000, function () {
