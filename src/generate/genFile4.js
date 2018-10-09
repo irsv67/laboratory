@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const readline_1 = require("readline");
 const os_1 = require("os");

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 class ConfigData {
 }
 ConfigData.myTable = {
@@ -34,7 +35,8 @@ ConfigData.myTable = {
             name: "createTime",
             desc: "创建时间",
             type: "normal"
-        }],
+        }
+    ],
     formArray: [
         {
             name: "id",
@@ -72,7 +74,8 @@ ConfigData.myTable = {
             name: "status",
             desc: "状态",
             type: "normal"
-        }],
+        }
+    ],
 };
 ConfigData.tdTag = {
     foo: "tdTag",

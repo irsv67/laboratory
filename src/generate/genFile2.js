@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const genFunc_1 = require("./genFunc");
 //初始化配置参数
 let tmpConfig = {

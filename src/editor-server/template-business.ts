@@ -51,7 +51,42 @@ export class TemplateBusiness {
             }
         }
 
-        return compObj['html_temp'];
+        return compObj;
+    }
+
+    getCompUrlByPageId(pageId: any) {
+        let pageObj = {};
+        let pageList = this.listMap['ud_page'];
+        for (let i = 0; i < pageList.length; i++) {
+            let obj = pageList[i];
+            if (obj.id == pageId) {
+                pageObj = obj;
+            }
+        }
+
+        return this.base_path + pageObj['script_url'];
+    }
+
+    getCompTempByCompId(compId: any) {
+        let compObj = {};
+        let compList = this.listMap['ud_comp'];
+        for (let i = 0; i < compList.length; i++) {
+            let obj = compList[i];
+            if (obj.id == compId) {
+                compObj = obj;
+            }
+        }
+
+        return compObj['script_temp'];
+    }
+
+    getHtmlStr(pageName: any, pageNameUpper: any) {
+        let str_b = '';
+        str_b += `<div editable-id="${pageName}" style="background-color: #ffffff; min-height: 200px;">\r\n`;
+        str_b += `\r\n`;
+        str_b += `</div>\r\n`;
+
+        return str_b;
     }
 
     getCompStr(pageName: any, pageNameUpper: any) {
@@ -66,6 +101,8 @@ export class TemplateBusiness {
         str_b += `})\r\n`;
         str_b += `export class ${pageNameUpper}Component implements OnInit {\r\n`;
         str_b += `\r\n`;
+        str_b += `    // ====include_start====\r\n`;
+        str_b += `    // ====include_end====\r\n`;
         str_b += `    constructor() {\r\n`;
         str_b += `    }\r\n`;
         str_b += `\r\n`;

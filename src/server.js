@@ -1,5 +1,6 @@
 "use strict";
-const http = require('http');
+Object.defineProperty(exports, "__esModule", { value: true });
+const http = require("http");
 //====================
 const server = http.createServer(function (request, response) {
     console.log("create a server...");

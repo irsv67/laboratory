@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const mysql_1 = require("mysql");
 /**
  * 公共查询后台

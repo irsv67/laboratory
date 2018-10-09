@@ -1,5 +1,6 @@
 "use strict";
-const mysql_1 = require('mysql');
+Object.defineProperty(exports, "__esModule", { value: true });
+const mysql_1 = require("mysql");
 // var mysql = require('mysql');
 var connection = mysql_1.createConnection({
     host: 'localhost',

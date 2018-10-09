@@ -1,8 +1,9 @@
 "use strict";
-const fs_1 = require('fs');
-const fs_2 = require('fs');
-const fs_3 = require('fs');
-const fs_4 = require('fs');
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = require("fs");
+const fs_2 = require("fs");
+const fs_3 = require("fs");
+const fs_4 = require("fs");
 let fileName = 'file.txt';
 let copy = function (_src, _dst) {
     // 读取目录中的所有文件/目录

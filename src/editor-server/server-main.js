@@ -1,7 +1,11 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const mysql_1 = require("mysql");
 const template_business_1 = require("./template-business");
+const os_1 = require("os");
+const fs_2 = require("fs");
+const readline_1 = require("readline");
 let connection = mysql_1.createConnection({
     host: 'localhost',
     user: 'root',
@@ -120,7 +124,8 @@ router.post('/addComp', function (req, res) {
     let pageId = req.body.pageId;
     let dropPointId = req.body.dropPointId;
     let position = req.body.position;
-    let compHtml = businessService.getHtmlTempByCompId(compId);
+    // 植入html代码
+    let compObj = businessService.getHtmlTempByCompId(compId);
     let fReadName = businessService.getHtmlUrlByPageId(pageId);
     let data = fs_1.readFileSync(fReadName, { encoding: 'utf-8' });
     let $ = cheerio.load(data, {
@@ -129,7 +134,7 @@ router.post('/addComp', function (req, res) {
         lowerCaseAttributeNames: false
     });
     let container = $("[editable-id=" + dropPointId + "]");
-    let html_temp_dom = cheerio.load(compHtml, {
+    let html_temp_dom = cheerio.load(compObj.html_temp, {
         decodeEntities: false,
         _useHtmlParser2: true,
         lowerCaseAttributeNames: false
@@ -151,6 +156,46 @@ router.post('/addComp', function (req, res) {
     }
     let aaa = $.html();
     fs_1.writeFileSync(fReadName, aaa);
+    // 植入ts代码111
+    let CompTemp = businessService.getCompTempByCompId(compId);
+    let CompUrl = businessService.getCompUrlByPageId(pageId);
+    let fRead = fs_2.createReadStream(CompUrl);
+    let fWrite = fs_2.createWriteStream(CompUrl + '.tmp');
+    let objReadline = readline_1.createInterface({
+        input: fRead,
+        output: fWrite
+    });
+    let index = 1;
+    let blockFound = false;
+    objReadline.on('line', (line) => {
+        if (line.indexOf('block_start_' + compObj.name) != -1) {
+            blockFound = true;
+            fWrite.write(line + os_1.EOL);
+        }
+        else if (line.indexOf('include_end') != -1 && !blockFound) {
+            fWrite.write('// ====block_start_' + compObj.name + '====' + os_1.EOL);
+            fWrite.write(CompTemp + os_1.EOL);
+            fWrite.write('// ====block_end_' + compObj.name + '====' + os_1.EOL);
+            fWrite.write(line + os_1.EOL);
+        }
+        else {
+            fWrite.write(line + os_1.EOL);
+        }
+        //        console.log(line + EOL);
+        index++;
+    });
+    objReadline.on('close', () => {
+        console.log('objReadline-close');
+        setTimeout(() => {
+            let data = fs_1.readFileSync(CompUrl + '.tmp', { encoding: 'utf-8' });
+            fs_1.writeFileSync(CompUrl, data);
+        }, 1000);
+        //        unlinkSync(CompUrl + '.tmp');
+    });
+    fWrite.on('end', () => {
+        console.log('fWrite-end');
+    });
+    // 返回正确
     res.send(JSON.stringify({
         status: "success"
     }));
@@ -179,11 +224,12 @@ router.post('/createPage', function (req, res) {
     let file_4 = '/' + pageName + '/' + pageName + '.module.ts';
     let file_5 = '/' + pageName + '/' + pageName + '.service.ts';
     let file_6 = '/' + pageName + '/' + pageName + '.routing.ts';
+    let str_1 = businessService.getHtmlStr(pageName, pageNameUpper);
     let str_3 = businessService.getCompStr(pageName, pageNameUpper);
     let str_4 = businessService.getModuleStr(pageName, pageNameUpper);
     let str_5 = businessService.getServiceStr(pageName, pageNameUpper);
     let str_6 = businessService.getRoutingStr(pageName, pageNameUpper);
-    fs_1.writeFileSync(businessService.base_path + file_1, 'welcom!');
+    fs_1.writeFileSync(businessService.base_path + file_1, str_1);
     fs_1.writeFileSync(businessService.base_path + file_2, '');
     fs_1.writeFileSync(businessService.base_path + file_3, str_3);
     fs_1.writeFileSync(businessService.base_path + file_4, str_4);

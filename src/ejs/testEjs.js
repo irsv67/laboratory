@@ -1,6 +1,7 @@
 "use strict";
-const ejs_1 = require('ejs');
-const ejs_2 = require('ejs');
+Object.defineProperty(exports, "__esModule", { value: true });
+const ejs_1 = require("ejs");
+const ejs_2 = require("ejs");
 let people = ['geddy', 'neil', 'alex'];
 let people2 = ['geddy2', 'neil2', 'alex2'];
 let html = ejs_1.render('<%= people.join(", "); %><%= People.join(", "); %>', { people: people, People: people2 });
