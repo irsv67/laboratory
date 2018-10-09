@@ -1,10 +1,11 @@
-import {createConnection} from "mysql";
+import { createConnection } from "mysql";
 
 export class TemplateBusiness {
 
     listMap: any = {};
 
     base_path: any = 'D:/_git_work/aeplus-front-end_dev/src/app/framework';
+    base_app: any = 'D:/_git_work/aeplus-front-end_dev/src/app';
 
     constructor() {
 
@@ -186,6 +187,17 @@ export class TemplateBusiness {
         str_b += `export class ${pageNameUpper}RoutingModule {\r\n`;
         str_b += `\r\n`;
         str_b += `}\r\n`;
+
+        return str_b;
+    }
+
+    getRouterStr(pageName: any, pageNameUpper: any) {
+
+        let str_b = '';
+        str_b += `    {\r\n`;
+        str_b += `        path: '${pageName}',\r\n`;
+        str_b += `        loadChildren: './framework/${pageName}/${pageName}.module#${pageNameUpper}Module'\r\n`;
+        str_b += `    },\r\n`;
 
         return str_b;
     }

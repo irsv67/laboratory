@@ -5,6 +5,7 @@ class TemplateBusiness {
     constructor() {
         this.listMap = {};
         this.base_path = 'D:/_git_work/aeplus-front-end_dev/src/app/framework';
+        this.base_app = 'D:/_git_work/aeplus-front-end_dev/src/app';
         let _that = this;
         let connection = mysql_1.createConnection({
             host: 'localhost',
@@ -163,6 +164,14 @@ class TemplateBusiness {
         str_b += `export class ${pageNameUpper}RoutingModule {\r\n`;
         str_b += `\r\n`;
         str_b += `}\r\n`;
+        return str_b;
+    }
+    getRouterStr(pageName, pageNameUpper) {
+        let str_b = '';
+        str_b += `    {\r\n`;
+        str_b += `        path: '${pageName}',\r\n`;
+        str_b += `        loadChildren: './framework/${pageName}/${pageName}.module#${pageNameUpper}Module'\r\n`;
+        str_b += `    },\r\n`;
         return str_b;
     }
 }

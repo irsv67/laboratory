@@ -235,6 +235,33 @@ router.post('/createPage', function (req, res) {
     fs_1.writeFileSync(businessService.base_path + file_4, str_4);
     fs_1.writeFileSync(businessService.base_path + file_5, str_5);
     fs_1.writeFileSync(businessService.base_path + file_6, str_6);
+    // ===============================
+    let str_router = businessService.getRouterStr(pageName, pageNameUpper);
+    let CompUrl = businessService.base_app + '/app.routing.ts';
+    let fRead = fs_2.createReadStream(CompUrl);
+    let fWrite = fs_2.createWriteStream(CompUrl + '.tmp');
+    let objReadline = readline_1.createInterface({
+        input: fRead,
+        output: fWrite
+    });
+    objReadline.on('line', (line) => {
+        if (line.indexOf('include_start') != -1) {
+            fWrite.write(line + os_1.EOL);
+            fWrite.write(str_router + os_1.EOL);
+        }
+        else {
+            fWrite.write(line + os_1.EOL);
+        }
+    });
+    objReadline.on('close', () => {
+        console.log('objReadline-close');
+        setTimeout(() => {
+            let data = fs_1.readFileSync(CompUrl + '.tmp', { encoding: 'utf-8' });
+            fs_1.writeFileSync(CompUrl, data);
+        }, 1000);
+        //        unlinkSync(CompUrl + '.tmp');
+    });
+    // ===============================
     let selectSql = `select count(*) as count from ud_page where name = '${pageName}'`;
     let updateSql = `INSERT
     INTO
@@ -256,7 +283,7 @@ router.post('/createPage', function (req, res) {
         '${file_3}',
         '${file_4}',
         '${file_5}',
-        'aaa'
+        '#/${pageName}/${pageName}'
     );`;
     let bbb = 1;
     console.log(bbb);

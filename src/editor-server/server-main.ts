@@ -1,9 +1,9 @@
-import {readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync, renameSync} from "fs";
-import {createConnection} from "mysql";
-import {TemplateBusiness} from "./template-business";
-import {EOL} from "os";
-import {readdirSync, statSync, createReadStream, createWriteStream} from "fs";
-import {createInterface} from "readline";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync, renameSync } from "fs";
+import { createConnection } from "mysql";
+import { TemplateBusiness } from "./template-business";
+import { EOL } from "os";
+import { readdirSync, statSync, createReadStream, createWriteStream } from "fs";
+import { createInterface } from "readline";
 
 let connection = createConnection({
     host: 'localhost',
@@ -70,7 +70,7 @@ router.get('/removeItem/:pageId/:compId', function (req, res) {
 
     let fReadName = businessService.getHtmlUrlByPageId(pageId);
 
-    let data = readFileSync(fReadName, {encoding: 'utf-8'});
+    let data = readFileSync(fReadName, { encoding: 'utf-8' });
     let $ = cheerio.load(data, {
         decodeEntities: false,
         _useHtmlParser2: true,
@@ -97,7 +97,7 @@ router.get('/selectItem/:pageId/:compId', function (req, res) {
 
     let fReadName = businessService.getHtmlUrlByPageId(pageId);
 
-    let data = readFileSync(fReadName, {encoding: 'utf-8'});
+    let data = readFileSync(fReadName, { encoding: 'utf-8' });
     let $ = cheerio.load(data, {
         decodeEntities: false,
         _useHtmlParser2: true,
@@ -126,7 +126,7 @@ router.post('/saveItem/:pageId/:compId', function (req, res) {
 
     let fReadName = businessService.getHtmlUrlByPageId(pageId);
 
-    let data = readFileSync(fReadName, {encoding: 'utf-8'});
+    let data = readFileSync(fReadName, { encoding: 'utf-8' });
     let $ = cheerio.load(data, {
         decodeEntities: false,
         _useHtmlParser2: true,
@@ -155,7 +155,7 @@ router.post('/addComp', function (req, res) {
     let compObj: any = businessService.getHtmlTempByCompId(compId);
     let fReadName = businessService.getHtmlUrlByPageId(pageId);
 
-    let data = readFileSync(fReadName, {encoding: 'utf-8'});
+    let data = readFileSync(fReadName, { encoding: 'utf-8' });
     let $ = cheerio.load(data, {
         decodeEntities: false,
         _useHtmlParser2: true,
@@ -214,17 +214,17 @@ router.post('/addComp', function (req, res) {
             fWrite.write(line + EOL);
         }
 
-//        console.log(line + EOL);
+        //        console.log(line + EOL);
         index++;
     });
 
     objReadline.on('close', () => {
         console.log('objReadline-close');
         setTimeout(() => {
-            let data = readFileSync(CompUrl + '.tmp', {encoding: 'utf-8'});
+            let data = readFileSync(CompUrl + '.tmp', { encoding: 'utf-8' });
             writeFileSync(CompUrl, data);
         }, 1000)
-//        unlinkSync(CompUrl + '.tmp');
+        //        unlinkSync(CompUrl + '.tmp');
     });
 
     fWrite.on('end', () => {
@@ -281,6 +281,38 @@ router.post('/createPage', function (req, res) {
     writeFileSync(businessService.base_path + file_5, str_5);
     writeFileSync(businessService.base_path + file_6, str_6);
 
+    // ===============================
+
+    let str_router = businessService.getRouterStr(pageName, pageNameUpper);
+    let CompUrl = businessService.base_app + '/app.routing.ts';
+
+    let fRead = createReadStream(CompUrl);
+    let fWrite = createWriteStream(CompUrl + '.tmp');
+
+    let objReadline = createInterface({
+        input: fRead,
+        output: fWrite
+    });
+    objReadline.on('line', (line) => {
+
+        if (line.indexOf('include_start') != -1) {
+            fWrite.write(line + EOL);
+            fWrite.write(str_router + EOL);
+        } else {
+            fWrite.write(line + EOL);
+        }
+    });
+
+    objReadline.on('close', () => {
+        console.log('objReadline-close');
+        setTimeout(() => {
+            let data = readFileSync(CompUrl + '.tmp', { encoding: 'utf-8' });
+            writeFileSync(CompUrl, data);
+        }, 1000)
+        //        unlinkSync(CompUrl + '.tmp');
+    });
+
+    // ===============================
     let selectSql = `select count(*) as count from ud_page where name = '${pageName}'`;
 
     let updateSql = `INSERT
@@ -303,7 +335,7 @@ router.post('/createPage', function (req, res) {
         '${file_3}',
         '${file_4}',
         '${file_5}',
-        'aaa'
+        '#/${pageName}/${pageName}'
     );`;
 
     let bbb = 1;
