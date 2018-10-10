@@ -4,8 +4,8 @@ const mysql_1 = require("mysql");
 class TemplateBusiness {
     constructor() {
         this.listMap = {};
-        this.base_path = 'D:/_git_work/aeplus-front-end_dev/src/app/framework';
-        this.base_app = 'D:/_git_work/aeplus-front-end_dev/src/app';
+        this.base_path = 'J:/test/aeplus/src/app/framework';
+        this.base_app = 'J:/test/aeplus/src/app';
         let _that = this;
         let connection = mysql_1.createConnection({
             host: 'localhost',

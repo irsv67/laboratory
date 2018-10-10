@@ -6,7 +6,9 @@ export class TemplateBusiness {
 
     base_path: any = 'D:/_git_work/aeplus-front-end_dev/src/app/framework';
     base_app: any = 'D:/_git_work/aeplus-front-end_dev/src/app';
-
+    //base_path: any = 'J:/test/aeplus/src/app/framework';
+    //base_app: any = 'J:/test/aeplus/src/app';
+	
     constructor() {
 
         let _that = this;

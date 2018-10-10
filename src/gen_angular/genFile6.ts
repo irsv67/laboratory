@@ -8,7 +8,7 @@ import { writeFile, readdirSync, statSync, mkdirSync, existsSync } from "fs";
 //初始化配置参数
 let tmpConfig: any = {
     tempName: "temp_ng_6x",//模板名
-    appName: "my-app4",//模块名
+    appName: "conch",//模块名
 };
 
 let scanDirFunc = function (curSrcDir: string, curDestDir: string, curFolder: string) {
@@ -39,8 +39,8 @@ let scanDirFunc = function (curSrcDir: string, curDestDir: string, curFolder: st
     })
 };
 
-let baseSrcDir = "J:/test/";
-let baseDestDir = "J:/test/";
+let baseSrcDir = "k:/";
+let baseDestDir = "k:/";
 
 //如果目标目录不存在，创建目标目录
 if (!existsSync(baseDestDir + tmpConfig.appName)) {

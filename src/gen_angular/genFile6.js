@@ -8,7 +8,7 @@ const fs_1 = require("fs");
 //初始化配置参数
 let tmpConfig = {
     tempName: "temp_ng_6x",
-    appName: "my-app4",
+    appName: "conch",
 };
 let scanDirFunc = function (curSrcDir, curDestDir, curFolder) {
     let dir = fs_1.readdirSync(curSrcDir + curFolder);
@@ -35,8 +35,8 @@ let scanDirFunc = function (curSrcDir, curDestDir, curFolder) {
         }
     });
 };
-let baseSrcDir = "J:/test/";
-let baseDestDir = "J:/test/";
+let baseSrcDir = "k:/";
+let baseDestDir = "k:/";
 //如果目标目录不存在，创建目标目录
 if (!fs_1.existsSync(baseDestDir + tmpConfig.appName)) {
     fs_1.mkdirSync(baseDestDir + tmpConfig.appName);
