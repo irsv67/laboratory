@@ -201,6 +201,13 @@ router.post('/addComp', function (req, res) {
     }));
 });
 // ==========================
+router.post('/createProject', function (req, res) {
+    let projectName = req.body.projectName;
+    res.send(JSON.stringify({
+        status: "success"
+    }));
+});
+// ==========================
 router.post('/createPage', function (req, res) {
     let pageName = req.body.pageName;
     let pageNameUpper = '';

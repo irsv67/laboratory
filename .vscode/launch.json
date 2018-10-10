@@ -7,7 +7,13 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "启动程序",
+            "name": "genFile6",
+            "program": "${workspaceFolder}/src/generate/genFile6.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "server-main",
             "program": "${workspaceFolder}\\src\\editor-server\\server-main.js"
         }
     ]

@@ -1,4 +1,4 @@
-import {GenFunc, RenderConfig} from "./genFunc";
+import {RenderConfig} from "./genFunc";
 import {renderFile} from "ejs";
 import {writeFile, readdirSync, statSync, mkdirSync, existsSync} from "fs";
 import {ConfigData} from "./configData";
