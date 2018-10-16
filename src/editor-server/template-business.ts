@@ -1,14 +1,8 @@
-import { createConnection } from "mysql";
+import {createConnection} from "mysql";
+import {ConchCommunication} from "./conch-communication";
 
 export class TemplateBusiness {
 
-    listMap: any = {};
-
-    base_path: any = 'D:/_git_work/aeplus-front-end_dev/src/app/framework';
-    base_app: any = 'D:/_git_work/aeplus-front-end_dev/src/app';
-    //base_path: any = 'J:/test/aeplus/src/app/framework';
-    //base_app: any = 'J:/test/aeplus/src/app';
-	
     constructor() {
 
         let _that = this;
@@ -19,69 +13,51 @@ export class TemplateBusiness {
             database: 'region'
         });
 
+        connection.query('SELECT * from ud_project', function (error, results, fields) {
+            if (error) throw error;
+            console.log('query table ud_project' + ', length: ', results.length);
+            for (let i = 0; i < results.length; i++) {
+                const obj = results[i];
+                ConchCommunication.getInstance().projectMap[obj.id] = obj;
+            }
+        });
         connection.query('SELECT * from ud_page', function (error, results, fields) {
             if (error) throw error;
             console.log('query table ud_page' + ', length: ', results.length);
-            _that.listMap['ud_page'] = results;
+            for (let i = 0; i < results.length; i++) {
+                const obj = results[i];
+                ConchCommunication.getInstance().pageMap[obj.id] = obj;
+            }
         });
         connection.query('SELECT * from ud_comp', function (error, results, fields) {
             if (error) throw error;
             console.log('query table ud_comp' + ', length: ', results.length);
-            _that.listMap['ud_comp'] = results;
+            for (let i = 0; i < results.length; i++) {
+                const obj = results[i];
+                ConchCommunication.getInstance().compMap[obj.id] = obj;
+            }
         });
     }
 
-    getHtmlUrlByPageId(pageId: any) {
-        let pageObj = {};
-        let pageList = this.listMap['ud_page'];
-        for (let i = 0; i < pageList.length; i++) {
-            let obj = pageList[i];
-            if (obj.id == pageId) {
-                pageObj = obj;
-            }
-        }
-
-        return this.base_path + pageObj['html_url'];
-    }
-
-    getHtmlTempByCompId(compId: any) {
-        let compObj = {};
-        let compList = this.listMap['ud_comp'];
-        for (let i = 0; i < compList.length; i++) {
-            let obj = compList[i];
-            if (obj.id == compId) {
-                compObj = obj;
-            }
-        }
-
-        return compObj;
-    }
-
-    getCompUrlByPageId(pageId: any) {
-        let pageObj = {};
-        let pageList = this.listMap['ud_page'];
-        for (let i = 0; i < pageList.length; i++) {
-            let obj = pageList[i];
-            if (obj.id == pageId) {
-                pageObj = obj;
-            }
-        }
-
-        return this.base_path + pageObj['script_url'];
-    }
-
-    getCompTempByCompId(compId: any) {
-        let compObj = {};
-        let compList = this.listMap['ud_comp'];
-        for (let i = 0; i < compList.length; i++) {
-            let obj = compList[i];
-            if (obj.id == compId) {
-                compObj = obj;
-            }
-        }
-
-        return compObj['script_temp'];
-    }
+//    getHtmlUrlByPageId(pageId: any) {
+//        let pageObj = ConchCommunication.getInstance().pageMap[pageId];
+//        return ConchCommunication.getInstance().base_path + pageObj['html_url'];
+//    }
+//
+//    getHtmlTempByCompId(compId: any) {
+//        let compObj = ConchCommunication.getInstance().compMap[compId];
+//        return compObj;
+//    }
+//
+//    getCompUrlByPageId(pageId: any) {
+//        let pageObj = ConchCommunication.getInstance().pageMap[pageId];
+//        return ConchCommunication.getInstance().base_path + pageObj['script_url'];
+//    }
+//
+//    getCompTempByCompId(compId: any) {
+//        let compObj = ConchCommunication.getInstance().compMap[compId];
+//        return compObj['script_temp'];
+//    }
 
     getHtmlStr(pageName: any, pageNameUpper: any) {
         let str_b = '';

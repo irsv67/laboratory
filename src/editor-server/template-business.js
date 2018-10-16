@@ -1,11 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mysql_1 = require("mysql");
+const conch_communication_1 = require("./conch-communication");
 class TemplateBusiness {
     constructor() {
-        this.listMap = {};
-        this.base_path = 'J:/test/aeplus/src/app/framework';
-        this.base_app = 'J:/test/aeplus/src/app';
         let _that = this;
         let connection = mysql_1.createConnection({
             host: 'localhost',
@@ -13,63 +11,53 @@ class TemplateBusiness {
             password: 'root',
             database: 'region'
         });
+        connection.query('SELECT * from ud_project', function (error, results, fields) {
+            if (error)
+                throw error;
+            console.log('query table ud_project' + ', length: ', results.length);
+            for (let i = 0; i < results.length; i++) {
+                const obj = results[i];
+                conch_communication_1.ConchCommunication.getInstance().projectMap[obj.id] = obj;
+            }
+        });
         connection.query('SELECT * from ud_page', function (error, results, fields) {
             if (error)
                 throw error;
             console.log('query table ud_page' + ', length: ', results.length);
-            _that.listMap['ud_page'] = results;
+            for (let i = 0; i < results.length; i++) {
+                const obj = results[i];
+                conch_communication_1.ConchCommunication.getInstance().pageMap[obj.id] = obj;
+            }
         });
         connection.query('SELECT * from ud_comp', function (error, results, fields) {
             if (error)
                 throw error;
             console.log('query table ud_comp' + ', length: ', results.length);
-            _that.listMap['ud_comp'] = results;
+            for (let i = 0; i < results.length; i++) {
+                const obj = results[i];
+                conch_communication_1.ConchCommunication.getInstance().compMap[obj.id] = obj;
+            }
         });
     }
-    getHtmlUrlByPageId(pageId) {
-        let pageObj = {};
-        let pageList = this.listMap['ud_page'];
-        for (let i = 0; i < pageList.length; i++) {
-            let obj = pageList[i];
-            if (obj.id == pageId) {
-                pageObj = obj;
-            }
-        }
-        return this.base_path + pageObj['html_url'];
-    }
-    getHtmlTempByCompId(compId) {
-        let compObj = {};
-        let compList = this.listMap['ud_comp'];
-        for (let i = 0; i < compList.length; i++) {
-            let obj = compList[i];
-            if (obj.id == compId) {
-                compObj = obj;
-            }
-        }
-        return compObj;
-    }
-    getCompUrlByPageId(pageId) {
-        let pageObj = {};
-        let pageList = this.listMap['ud_page'];
-        for (let i = 0; i < pageList.length; i++) {
-            let obj = pageList[i];
-            if (obj.id == pageId) {
-                pageObj = obj;
-            }
-        }
-        return this.base_path + pageObj['script_url'];
-    }
-    getCompTempByCompId(compId) {
-        let compObj = {};
-        let compList = this.listMap['ud_comp'];
-        for (let i = 0; i < compList.length; i++) {
-            let obj = compList[i];
-            if (obj.id == compId) {
-                compObj = obj;
-            }
-        }
-        return compObj['script_temp'];
-    }
+    //    getHtmlUrlByPageId(pageId: any) {
+    //        let pageObj = ConchCommunication.getInstance().pageMap[pageId];
+    //        return ConchCommunication.getInstance().base_path + pageObj['html_url'];
+    //    }
+    //
+    //    getHtmlTempByCompId(compId: any) {
+    //        let compObj = ConchCommunication.getInstance().compMap[compId];
+    //        return compObj;
+    //    }
+    //
+    //    getCompUrlByPageId(pageId: any) {
+    //        let pageObj = ConchCommunication.getInstance().pageMap[pageId];
+    //        return ConchCommunication.getInstance().base_path + pageObj['script_url'];
+    //    }
+    //
+    //    getCompTempByCompId(compId: any) {
+    //        let compObj = ConchCommunication.getInstance().compMap[compId];
+    //        return compObj['script_temp'];
+    //    }
     getHtmlStr(pageName, pageNameUpper) {
         let str_b = '';
         str_b += `<div editable-id="${pageName}" style="background-color: #ffffff; min-height: 200px;">\r\n`;
