@@ -28,6 +28,9 @@ class ConchBusiness {
             }
         }
         const sql = 'SELECT * from ' + tableName + whereClause;
+        if (tableName === 'ud_comp') {
+            sql += ' order by order_index';
+        }
         const callback = function (error, results, fields) {
             if (error)
                 throw error;

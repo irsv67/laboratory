@@ -60,7 +60,7 @@ class TemplateBusiness {
     //    }
     getHtmlStr(pageName, pageNameUpper) {
         let str_b = '';
-        str_b += `<div editable-id="${pageName}" style="background-color: #ffffff; min-height: 200px;">\r\n`;
+        str_b += `<div editable-id="${pageName}" style="background-color: rgba(238,240,243,1); min-height: 200px;">\r\n`;
         str_b += `\r\n`;
         str_b += `</div>\r\n`;
         return str_b;
