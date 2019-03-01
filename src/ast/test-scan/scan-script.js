@@ -105,8 +105,8 @@ class ScanScript {
                         const path = entry.moduleSpecifier.text;
                         const tmpFullPath = that.convertPath(path, subPath);
                         const importItem = {
-                            class: element.name.escapedText,
-                            path: entry.moduleSpecifier.text,
+                            className: element.name.escapedText,
+                            // path: entry.moduleSpecifier.text,
                             fullPath: tmpFullPath
                         };
                         importList.push(importItem);

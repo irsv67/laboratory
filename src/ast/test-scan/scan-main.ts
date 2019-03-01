@@ -53,139 +53,23 @@ export class ScanMain {
         this.scanProjectAllRecu(root_path, '.', moduleMap);
 
         setTimeout(() => {
+
             this.convertData(moduleMap);
+            this.convertCompList(moduleMap);
+            writeFileSync(projectConchPath + '/s_moduleMap.json', JSON.stringify(moduleMap));
 
             const d3_data = {
                 nodes: [],
                 edges: []
             };
-
             this.parseModuleAndComp(moduleMap, d3_data);
-
-            writeFileSync(projectConchPath + '/s_moduleMap.json', JSON.stringify(moduleMap));
-
             writeFileSync(projectConchPath + '/s_d3_data.json', JSON.stringify(d3_data));
 
         }, 1000);
     }
 
-    private parseCompAndComp(moduleMap, compAndComp) {
-        let countId = 0;
-        const tmpObj = {
-            nodeMap: {},
-            edgeMap: {}
-        };
-
-        for (let module in moduleMap[Const.COMPONENT]) {
-            const moduleList = moduleMap[Const.COMPONENT][module];
-            moduleList.forEach((moduleObj: any) => {
-                if (moduleObj.compList) {
-                    moduleObj.compList.forEach((compObj: any) => {
-
-                        let type;
-                        if (moduleMap[Const.COMPONENT][compObj]) {
-                            type = Const.D3_COMPONENT;
-                        }
-
-                        if (type) {
-                            if (!tmpObj.nodeMap[module]) {
-                                tmpObj.nodeMap[module] = 1;
-
-                                compAndComp.nodes.push({
-                                    "id": module,
-                                    "type": type,
-                                    "name": module,
-                                    "degree": 57
-                                });
-                            }
-
-                            if (!tmpObj.nodeMap[compObj]) {
-                                tmpObj.nodeMap[compObj] = 1;
-
-                                compAndComp.nodes.push({
-                                    "id": compObj,
-                                    "type": type,
-                                    "name": compObj,
-                                    "degree": 57
-                                });
-                            }
-
-                            if (!tmpObj.edgeMap[module + compObj]) {
-                                tmpObj.edgeMap[module + compObj] = 1;
-                                compAndComp.edges.push({
-                                    "id": "edge_" + countId++,
-                                    "source": module,
-                                    "target": compObj
-                                });
-                            }
-                        }
-                    });
-                }
-            });
-        }
-    }
-
-    private parseModuleAndComp(moduleMap, d3_data) {
-        let countId = 0;
-        const tmpObj = {
-            nodeMap: {},
-            edgeMap: {}
-        };
-
-        const moduleList = moduleMap[Const.CLASS_LIST][Const.NG_MODULE];
-        moduleList.forEach((moduleObj: any) => {
-            if (moduleObj.importList) {
-                moduleObj.importList.forEach((importObj: any) => {
-
-                    let type;
-                    if (moduleMap[Const.TYPE_MAP][Const.NG_MODULE][importObj.class]) {
-                        type = Const.D3_NG_MODULE;
-                    } else if (moduleMap[Const.TYPE_MAP][Const.COMPONENT][importObj.class]) {
-                        type = Const.D3_COMPONENT;
-                    }
-
-                    if (type) {
-                        if (!tmpObj.nodeMap[moduleObj.className]) {
-                            tmpObj.nodeMap[moduleObj.className] = 1;
-
-                            d3_data.nodes.push({
-                                "id": moduleObj.className,
-                                "type": Const.D3_NG_MODULE,
-                                "name": moduleObj.className,
-                                "degree": 57
-                            });
-                        }
-
-                        if (!tmpObj.nodeMap[importObj.class]) {
-                            tmpObj.nodeMap[importObj.class] = 1;
-
-                            let degree = (type === Const.D3_NG_MODULE ? 57 : 23);
-
-                            d3_data.nodes.push({
-                                "id": importObj.class,
-                                "type": type,
-                                "name": importObj.class,
-                                "degree": degree
-                            });
-                        }
-
-                        if (!tmpObj.edgeMap[moduleObj.className + importObj.class]) {
-                            tmpObj.edgeMap[moduleObj.className + importObj.class] = 1;
-                            d3_data.edges.push({
-                                "id": "edge_" + countId++,
-                                "source": moduleObj.className,
-                                "target": importObj.class
-                            });
-                        }
-                    }
-                });
-            }
-        });
-    }
-
+    // 将html依赖拼装进moduleMap
     private convertData(moduleMap) {
-
-        // 将html依赖拼装进moduleMap
         const compFullList = moduleMap[Const.CLASS_LIST][Const.COMPONENT];
         compFullList.forEach((moduleObj: any) => {
             const key = moduleObj.subPath + moduleObj.templateKey.substring(1);
@@ -194,6 +78,77 @@ export class ScanMain {
                 // 找到对应的html对象
                 const htmlObj = templateMap[key];
                 moduleObj.compList = htmlObj.compList
+            }
+        });
+    }
+
+    // 将组件依赖转换为完整路径key
+    private convertCompList(moduleMap) {
+        const compFullList = moduleMap[Const.CLASS_LIST][Const.COMPONENT];
+
+        const moduleFullList = moduleMap[Const.CLASS_LIST][Const.NG_MODULE];
+        const moduleTypeMap = moduleMap[Const.TYPE_MAP][Const.NG_MODULE];
+        const compTypeMap = moduleMap[Const.TYPE_MAP][Const.COMPONENT];
+        compFullList.forEach((compObj: any) => {
+            if (compObj.compList) {
+
+                const curCompList = [];
+
+                const curCompMap = {};
+                compObj.compList.forEach((subCompObj: any) => {
+                    curCompMap[subCompObj] = 1;
+                });
+
+                const parentModuleList = [];
+                this.getParentModuleList(moduleFullList, compObj.className, parentModuleList);
+
+                parentModuleList.forEach((parentModuleObj: any) => {
+                    parentModuleObj.importList.forEach((importForModule: any) => {
+
+                        // 在直属module中寻找引用
+                        if (compTypeMap[importForModule.className]) {
+                            if (curCompMap[importForModule.className]) {
+                                const key2 = importForModule.fullPath + '#' + importForModule.className;
+                                const curComp = moduleMap[Const.FULL_MAP][Const.COMPONENT][key2];
+                                curCompList.push(key2);
+                            }
+                        }
+
+                        // 在直属module引用打的module中寻找引用
+                        if (moduleTypeMap[importForModule.className]) {
+
+                            const key = importForModule.fullPath + '#' + importForModule.className;
+                            const curModule = moduleMap[Const.FULL_MAP][Const.NG_MODULE][key];
+
+                            if (curModule) {
+                                curModule.importList.forEach((importObj: any) => {
+                                    if (curCompMap[importObj.className]) {
+
+                                        const key2 = importObj.fullPath + '#' + importObj.className;
+                                        const curComp = moduleMap[Const.FULL_MAP][Const.COMPONENT][key2];
+                                        curCompList.push(key2);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                });
+
+                compObj.compListFull = curCompList;
+            }
+        });
+    }
+
+    private getParentModuleList(moduleFullList, className: any, parentModuleList) {
+        // 找到所在的module
+        moduleFullList.forEach((moduleObj: any) => {
+            if (moduleObj.importList) {
+                moduleObj.importList.forEach((importObj: any) => {
+                    // 找到本module
+                    if (importObj.className === className) {
+                        parentModuleList.push(moduleObj);
+                    }
+                });
             }
         });
     }
@@ -235,6 +190,69 @@ export class ScanMain {
                 }
             });
         }
+    }
+
+    private parseModuleAndComp(moduleMap, d3_data) {
+        let countId = 0;
+        const tmpObj = {
+            nodeMap: {},
+            edgeMap: {}
+        };
+
+        const moduleList = moduleMap[Const.CLASS_LIST][Const.NG_MODULE];
+        moduleList.forEach((moduleObj: any) => {
+            if (moduleObj.importList) {
+                moduleObj.importList.forEach((importObj: any) => {
+
+                    if (importObj.className === 'DateFormatPipeModule'
+                        || importObj.className === 'MoreSearchModule') {
+                        return;
+                    }
+
+                    let type;
+                    if (moduleMap[Const.TYPE_MAP][Const.NG_MODULE][importObj.className]) {
+                        type = Const.D3_NG_MODULE;
+                    } else if (moduleMap[Const.TYPE_MAP][Const.COMPONENT][importObj.className]) {
+                        type = Const.D3_COMPONENT;
+                    }
+
+                    if (type) {
+                        if (!tmpObj.nodeMap[moduleObj.className]) {
+                            tmpObj.nodeMap[moduleObj.className] = 1;
+
+                            d3_data.nodes.push({
+                                "id": moduleObj.className,
+                                "type": Const.D3_NG_MODULE,
+                                "name": moduleObj.className,
+                                "degree": 23
+                            });
+                        }
+
+                        if (!tmpObj.nodeMap[importObj.className]) {
+                            tmpObj.nodeMap[importObj.className] = 1;
+
+                            let degree = (type === Const.D3_NG_MODULE ? 23 : 57);
+
+                            d3_data.nodes.push({
+                                "id": importObj.className,
+                                "type": type,
+                                "name": importObj.className,
+                                "degree": degree
+                            });
+                        }
+
+                        if (!tmpObj.edgeMap[moduleObj.className + importObj.className]) {
+                            tmpObj.edgeMap[moduleObj.className + importObj.className] = 1;
+                            d3_data.edges.push({
+                                "id": "edge_" + countId++,
+                                "source": moduleObj.className,
+                                "target": importObj.className
+                            });
+                        }
+                    }
+                });
+            }
+        });
     }
 
 }
