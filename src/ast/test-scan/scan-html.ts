@@ -1,12 +1,13 @@
 import {createReadStream, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync} from 'fs';
 import {createInterface} from 'readline';
+import {Const} from "./const";
 
 export class ScanHtml {
 
     constructor() {
     }
 
-    public writeHtmlMap($, subPath, file: string, htmlMap) {
+    public writeHtmlMap($, subPath, file: string, moduleMap) {
 
         const that = this;
 
@@ -17,21 +18,14 @@ export class ScanHtml {
         const rootDom = root_dom[0];
         that.getHtmlCompRecu(rootDom, compSet);
 
-        const fileNew = file.split('.')[0];
-        let nameAll = that.getBigNameBySmall(fileNew);
-
-        nameAll += 'Component';
-
         const singleFile = {
-            className: nameAll,
-            fullPath: subPath + file.substring(0, file.length - 5),
             compList: compSet.size > 0 ? Array.from(compSet) : undefined,
         };
 
-        if (htmlMap[nameAll] === undefined) {
-            htmlMap[nameAll] = [];
+        if (singleFile.compList) {
+            const fullKey = subPath + '/' + file;
+            moduleMap[Const.FULL_MAP][Const.TEMPLATE][fullKey] = singleFile;
         }
-        htmlMap[nameAll].push(singleFile);
 
     }
 

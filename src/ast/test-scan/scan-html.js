@@ -1,26 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const const_1 = require("./const");
 class ScanHtml {
     constructor() {
     }
-    writeHtmlMap($, subPath, file, htmlMap) {
+    writeHtmlMap($, subPath, file, moduleMap) {
         const that = this;
         const root_dom = $.root();
         const compSet = new Set();
         const rootDom = root_dom[0];
         that.getHtmlCompRecu(rootDom, compSet);
-        const fileNew = file.split('.')[0];
-        let nameAll = that.getBigNameBySmall(fileNew);
-        nameAll += 'Component';
         const singleFile = {
-            className: nameAll,
-            fullPath: subPath + file.substring(0, file.length - 5),
             compList: compSet.size > 0 ? Array.from(compSet) : undefined,
         };
-        if (htmlMap[nameAll] === undefined) {
-            htmlMap[nameAll] = [];
+        if (singleFile.compList) {
+            const fullKey = subPath + '/' + file;
+            moduleMap[const_1.Const.FULL_MAP][const_1.Const.TEMPLATE][fullKey] = singleFile;
         }
-        htmlMap[nameAll].push(singleFile);
     }
     getHtmlCompRecu(rootDom, compSet) {
         for (let i = 0; i < rootDom.children.length; i++) {

@@ -16,7 +16,7 @@ import {Parser} from './parser';
 
 let parser = new Parser();
 
-let fReadName = 'C:\\Users\\tommy\\Desktop\\conch_code\\app.routing.ts';
+let fReadName = 'C:\\Users\\tommy\\Desktop\\stage.component.ts';
 
 let data = readFileSync(fReadName, {encoding: 'utf-8'});
 
@@ -99,10 +99,10 @@ sourceFile.statements.forEach((entry: any) => {
                     console.log('CallExpression(186):' + decoItem.expression.escapedText);
                     if (decoItem.arguments && decoItem.arguments.length > 0
                         && decoItem.arguments[0].properties && decoItem.arguments[0].properties.length > 0) {
-                        decoItem.arguments[0].properties.forEach((argumnet: any) => {
-                            console.log(argumnet.name.escapedText + ':' + (argumnet.initializer.text || argumnet.initializer.elements));
-                            if (argumnet.name.escapedText === 'imports') {
-                                argumnet.initializer.elements.forEach((item: any) => {
+                        decoItem.arguments[0].properties.forEach((argument: any) => {
+                            console.log(argument.name.escapedText + ':' + (argument.initializer.text || argument.initializer.elements));
+                            if (argument.name.escapedText === 'imports') {
+                                argument.initializer.elements.forEach((item: any) => {
                                     // CallExpression
                                     if (item.kind === 186) {
                                         const expression = item.expression;

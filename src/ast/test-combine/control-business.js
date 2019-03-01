@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
+const const_1 = require("../test-scan/const");
 class ControlBusiness {
     constructor() {
         this.cheerio = require('cheerio');
@@ -31,8 +32,8 @@ class ControlBusiness {
         const json_data = fs_1.readFileSync(projectConchPath + '/s_moduleMap.json', { encoding: 'utf-8' });
         const moduleMap = JSON.parse(json_data);
         const parentMap = {};
-        for (let module in moduleMap['NgModule']) {
-            const moduleList = moduleMap['NgModule'][module];
+        for (let module in moduleMap[const_1.Const.NG_MODULE]) {
+            const moduleList = moduleMap[const_1.Const.NG_MODULE][module];
             moduleList.forEach((moduleObj) => {
                 if (moduleObj.rootRouting) {
                     moduleObj.routingList.forEach((parentItem) => {
@@ -52,8 +53,8 @@ class ControlBusiness {
             'children': []
         };
         const routingList = [];
-        for (const module in moduleMap['NgModule']) {
-            const moduleList = moduleMap['NgModule'][module];
+        for (const module in moduleMap[const_1.Const.NG_MODULE]) {
+            const moduleList = moduleMap[const_1.Const.NG_MODULE][module];
             moduleList.forEach((moduleObj) => {
                 if (!moduleObj.rootRouting) {
                     const keyChange = key.split('Routing')[0] + key.split('Routing')[1];

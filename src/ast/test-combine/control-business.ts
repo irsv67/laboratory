@@ -1,6 +1,7 @@
 import {createReadStream, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync} from 'fs';
 import {createInterface} from 'readline';
 import * as _ts from 'typescript';
+import {Const} from '../test-scan/const';
 
 export class ControlBusiness {
 
@@ -49,8 +50,8 @@ export class ControlBusiness {
 
         const parentMap = {};
 
-        for (let module in moduleMap['NgModule']) {
-            const moduleList = moduleMap['NgModule'][module];
+        for (let module in moduleMap[Const.NG_MODULE]) {
+            const moduleList = moduleMap[Const.NG_MODULE][module];
             moduleList.forEach((moduleObj: any) => {
                 if (moduleObj.rootRouting) {
 
@@ -74,12 +75,11 @@ export class ControlBusiness {
 
         const routingList = [];
 
-        for (const module in moduleMap['NgModule']) {
+        for (const module in moduleMap[Const.NG_MODULE]) {
 
-            const moduleList = moduleMap['NgModule'][module];
+            const moduleList = moduleMap[Const.NG_MODULE][module];
             moduleList.forEach((moduleObj: any) => {
                 if (!moduleObj.rootRouting) {
-
 
                     const keyChange = key.split('Routing')[0] + key.split('Routing')[1];
 

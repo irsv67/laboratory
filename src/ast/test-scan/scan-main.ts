@@ -4,6 +4,7 @@ import * as _ts from 'typescript';
 import {Parser} from '../parser';
 import {ScanScript} from './scan-script';
 import {ScanHtml} from './scan-html';
+import {Const} from './const';
 
 export class ScanMain {
 
@@ -31,38 +32,39 @@ export class ScanMain {
 
         const root_path = projectObj.root_path + '/src/app';
         const moduleMap = {
-            NgModule: {},
-            Component: {},
-            Injectable: {}
+            [Const.CLASS_LIST]: {
+                [Const.NG_MODULE]: [],
+                [Const.COMPONENT]: [],
+                [Const.INJECTABLE]: []
+            },
+            [Const.FULL_MAP]: {
+                [Const.NG_MODULE]: {},
+                [Const.COMPONENT]: {},
+                [Const.INJECTABLE]: {},
+                [Const.TEMPLATE]: {}
+            },
+            [Const.TYPE_MAP]: {
+                [Const.NG_MODULE]: {},
+                [Const.COMPONENT]: {},
+                [Const.INJECTABLE]: {}
+            }
         };
 
-        const htmlMap = {};
-        this.scanProjectAllRecu(root_path, '.', moduleMap, htmlMap);
+        this.scanProjectAllRecu(root_path, '.', moduleMap);
 
         setTimeout(() => {
-            this.convertData(moduleMap, htmlMap);
+            this.convertData(moduleMap);
 
-            const netData = {
+            const d3_data = {
                 nodes: [],
                 edges: []
             };
 
-            this.parseModuleAndComp(moduleMap, netData);
-
-            const compAndComp = {
-                nodes: [],
-                edges: []
-            };
-
-            this.parseCompAndComp(moduleMap, compAndComp);
+            this.parseModuleAndComp(moduleMap, d3_data);
 
             writeFileSync(projectConchPath + '/s_moduleMap.json', JSON.stringify(moduleMap));
 
-            writeFileSync(projectConchPath + '/s_htmlMap.json', JSON.stringify(htmlMap));
-
-            writeFileSync(projectConchPath + '/s_netMap.json', JSON.stringify(netData));
-
-            writeFileSync(projectConchPath + '/s_compAndComp.json', JSON.stringify(compAndComp));
+            writeFileSync(projectConchPath + '/s_d3_data.json', JSON.stringify(d3_data));
 
         }, 1000);
     }
@@ -74,15 +76,15 @@ export class ScanMain {
             edgeMap: {}
         };
 
-        for (let module in moduleMap['Component']) {
-            const moduleList = moduleMap['Component'][module];
+        for (let module in moduleMap[Const.COMPONENT]) {
+            const moduleList = moduleMap[Const.COMPONENT][module];
             moduleList.forEach((moduleObj: any) => {
                 if (moduleObj.compList) {
                     moduleObj.compList.forEach((compObj: any) => {
 
                         let type;
-                        if (moduleMap['Component'][compObj]) {
-                            type = 'Component';
+                        if (moduleMap[Const.COMPONENT][compObj]) {
+                            type = Const.D3_COMPONENT;
                         }
 
                         if (type) {
@@ -123,129 +125,80 @@ export class ScanMain {
         }
     }
 
-    private parseModuleAndComp(moduleMap, netData) {
+    private parseModuleAndComp(moduleMap, d3_data) {
         let countId = 0;
         const tmpObj = {
             nodeMap: {},
             edgeMap: {}
         };
 
-        for (let module in moduleMap['NgModule']) {
-            const moduleList = moduleMap['NgModule'][module];
-            moduleList.forEach((moduleObj: any) => {
-                if (moduleObj.importList) {
-                    moduleObj.importList.forEach((importObj: any) => {
+        const moduleList = moduleMap[Const.CLASS_LIST][Const.NG_MODULE];
+        moduleList.forEach((moduleObj: any) => {
+            if (moduleObj.importList) {
+                moduleObj.importList.forEach((importObj: any) => {
 
-                        let type;
-                        if (moduleMap['NgModule'][importObj.class]) {
-                            type = 'NgModule';
-                        } else if (moduleMap['Component'][importObj.class]) {
-                            type = 'Component';
+                    let type;
+                    if (moduleMap[Const.TYPE_MAP][Const.NG_MODULE][importObj.class]) {
+                        type = Const.D3_NG_MODULE;
+                    } else if (moduleMap[Const.TYPE_MAP][Const.COMPONENT][importObj.class]) {
+                        type = Const.D3_COMPONENT;
+                    }
+
+                    if (type) {
+                        if (!tmpObj.nodeMap[moduleObj.className]) {
+                            tmpObj.nodeMap[moduleObj.className] = 1;
+
+                            d3_data.nodes.push({
+                                "id": moduleObj.className,
+                                "type": Const.D3_NG_MODULE,
+                                "name": moduleObj.className,
+                                "degree": 57
+                            });
                         }
 
-                        if (type) {
-                            if (!tmpObj.nodeMap[module]) {
-                                tmpObj.nodeMap[module] = 1;
+                        if (!tmpObj.nodeMap[importObj.class]) {
+                            tmpObj.nodeMap[importObj.class] = 1;
 
-                                netData.nodes.push({
-                                    "id": module,
-                                    "type": 'NgModule',
-                                    "name": module,
-                                    "degree": 57
-                                });
-                            }
+                            let degree = (type === Const.D3_NG_MODULE ? 57 : 23);
 
-                            if (!tmpObj.nodeMap[importObj.class]) {
-                                tmpObj.nodeMap[importObj.class] = 1;
-
-                                let degree = (type === 'NgModule' ? 57 : 23);
-
-                                netData.nodes.push({
-                                    "id": importObj.class,
-                                    "type": type,
-                                    "name": importObj.class,
-                                    "degree": degree
-                                });
-                            }
-
-                            if (!tmpObj.edgeMap[module + importObj.class]) {
-                                tmpObj.edgeMap[module + importObj.class] = 1;
-                                netData.edges.push({
-                                    "id": "edge_" + countId++,
-                                    "source": module,
-                                    "target": importObj.class
-                                });
-                            }
+                            d3_data.nodes.push({
+                                "id": importObj.class,
+                                "type": type,
+                                "name": importObj.class,
+                                "degree": degree
+                            });
                         }
-                    });
-                }
-            });
-        }
+
+                        if (!tmpObj.edgeMap[moduleObj.className + importObj.class]) {
+                            tmpObj.edgeMap[moduleObj.className + importObj.class] = 1;
+                            d3_data.edges.push({
+                                "id": "edge_" + countId++,
+                                "source": moduleObj.className,
+                                "target": importObj.class
+                            });
+                        }
+                    }
+                });
+            }
+        });
     }
 
-    private convertData(moduleMap, htmlMap) {
+    private convertData(moduleMap) {
 
         // 将html依赖拼装进moduleMap
-        for (let module in moduleMap['Component']) {
-            const moduleList = moduleMap['Component'][module];
-            moduleList.forEach((modlueObj: any) => {
-                if (htmlMap[module]) {
-                    // 找到对应的html对象
-                    const htmlList = htmlMap[module];
-                    let htmlObj;
-                    if (htmlList.length == 1) {
-                        htmlObj = htmlList[0];
-                    } else {
-                        htmlList.forEach((obj: any) => {
-                            if (obj.fullPath === modlueObj.fullPath) {
-                                htmlObj = obj;
-                            }
-                        });
-                    }
-                    if (htmlObj && htmlObj.compList) {
-                        console.log('compList:' + module);
-                        modlueObj.compList = htmlObj.compList
-                    }
-                }
-            });
-        }
-
-        // 筛选出重名组件存入独立的对象副本
-        moduleMap['NgModule_multi'] = {};
-        moduleMap['Component_multi'] = {};
-        moduleMap['Injectable_multi'] = {};
-        moduleMap['RoutingConfigMap'] = {};
-
-        for (let module in moduleMap['NgModule']) {
-            const moduleList = moduleMap['NgModule'][module];
-            if (moduleList.length > 1) {
-                moduleMap['NgModule_multi'][module] = moduleList;
+        const compFullList = moduleMap[Const.CLASS_LIST][Const.COMPONENT];
+        compFullList.forEach((moduleObj: any) => {
+            const key = moduleObj.subPath + moduleObj.templateKey.substring(1);
+            const templateMap = moduleMap[Const.FULL_MAP][Const.TEMPLATE];
+            if (templateMap[key]) {
+                // 找到对应的html对象
+                const htmlObj = templateMap[key];
+                moduleObj.compList = htmlObj.compList
             }
-
-            moduleList.forEach((moduleObj: any) => {
-                if (moduleObj.routingList) {
-                    if (moduleMap['RoutingConfigMap'][module] === undefined) {
-                        moduleMap['RoutingConfigMap'][module] = [];
-                    }
-                    moduleMap['RoutingConfigMap'][module].push(moduleObj);
-                }
-            });
-        }
-        for (let module in moduleMap['Component']) {
-            const moduleList = moduleMap['Component'][module];
-            if (moduleList.length > 1) {
-                moduleMap['Component_multi'][module] = moduleList;
-            }
-        }
-        for (let module in moduleMap['Injectable']) {
-            const moduleList = moduleMap['Injectable'][module];
-            if (moduleList.length > 1) {
-                moduleMap['Injectable_multi'][module] = moduleList;
-            }
-        }
+        });
     }
 
-    scanProjectAllRecu(filePath, subPath, moduleMap, htmlMap) {
+    scanProjectAllRecu(filePath, subPath, moduleMap) {
         const that = this;
 
         let files = [];
@@ -254,7 +207,7 @@ export class ScanMain {
             files.forEach(function (file: string, index) {
                 const curPath = filePath + '/' + file;
                 if (statSync(curPath).isDirectory()) {
-                    that.scanProjectAllRecu(curPath, subPath + '/' + file, moduleMap, htmlMap);
+                    that.scanProjectAllRecu(curPath, subPath + '/' + file, moduleMap);
                 } else if (file.endsWith('.ts')) {
                     console.log('----' + file);
 
@@ -278,7 +231,7 @@ export class ScanMain {
                         _useHtmlParser2: true,
                         lowerCaseAttributeNames: false
                     });
-                    that.scanHtml.writeHtmlMap($, subPath, file, htmlMap);
+                    that.scanHtml.writeHtmlMap($, subPath, file, moduleMap);
                 }
             });
         }

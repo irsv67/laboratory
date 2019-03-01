@@ -1,5 +1,6 @@
 import {createReadStream, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync} from 'fs';
 import {createInterface} from 'readline';
+import {Const} from './const';
 
 export class ScanScript {
 
@@ -14,8 +15,9 @@ export class ScanScript {
         let curName = '';
         let curType = '';
         let rootRouting = false;
+        let templateKey = '';
 
-        const singleFile = {};
+        const singleFile: any = {};
         const importList = [];
         const routingList = [];
 
@@ -30,35 +32,32 @@ export class ScanScript {
             curName = retObj.curName;
             curType = retObj.curType;
             rootRouting = retObj.rootRouting;
-
+            templateKey = retObj.templateKey;
         });
 
         // 遍历结束
         singleFile['className'] = curName;
         singleFile['classType'] = curType;
-        singleFile['fullPath'] = subPath + '/' + file.substring(0, file.length - 3);
+        singleFile['subPath'] = subPath;
+        singleFile['fileName'] = file.substring(0, file.length - 3);
         singleFile['importList'] = importList;
+
+        if (curType === Const.COMPONENT) {
+            singleFile['templateKey'] = templateKey;
+        }
 
         if (routingList.length > 0) {
             singleFile['rootRouting'] = rootRouting;
             singleFile['routingList'] = routingList;
         }
 
-        if (moduleMap['NgModule'] === undefined) {
-            moduleMap['NgModule'] = {};
-        }
-        if (moduleMap['Component'] === undefined) {
-            moduleMap['Component'] = {};
-        }
-        if (moduleMap['Injectable'] === undefined) {
-            moduleMap['Injectable'] = {};
-        }
+        if (curType === Const.NG_MODULE || curType === Const.COMPONENT || curType === Const.INJECTABLE) {
 
-        if (curType === 'NgModule' || curType === 'Component' || curType === 'Injectable') {
-            if (moduleMap[curType][curName] === undefined) {
-                moduleMap[curType][curName] = [];
-            }
-            moduleMap[curType][curName].push(singleFile);
+            moduleMap[Const.CLASS_LIST][curType].push(singleFile);
+            const fullKey = singleFile.subPath + '/' + singleFile.fileName + '#' + singleFile.className;
+            moduleMap[Const.FULL_MAP][curType][fullKey] = singleFile;
+
+            moduleMap[Const.TYPE_MAP][curType][curName] = 1;
         }
     }
 
@@ -67,6 +66,7 @@ export class ScanScript {
         let curName = '';
         let curType = '';
         let rootRouting = false;
+        let templateKey = '';
 
         // ClassDeclaration
         if (entry.kind === 234) {
@@ -86,6 +86,9 @@ export class ScanScript {
                         if (decoItem.arguments && decoItem.arguments.length > 0
                             && decoItem.arguments[0].properties && decoItem.arguments[0].properties.length > 0) {
                             decoItem.arguments[0].properties.forEach((argumnet: any) => {
+                                if (argumnet.name.escapedText === 'templateUrl') {
+                                    templateKey = argumnet.initializer.text;
+                                }
                                 // console.log(argumnet.name.escapedText + ':' + (argumnet.initializer.text || argumnet.initializer.elements));
                                 // 识别 RouterModule.forRoot();
                                 if (argumnet.name.escapedText === 'imports') {
@@ -108,7 +111,7 @@ export class ScanScript {
                 // console.log(']');
             }
         }
-        return {curName, curType, rootRouting};
+        return {curName, curType, rootRouting, templateKey};
     }
 
     private parseImportList(entry: any, subPath, importList) {
@@ -124,12 +127,12 @@ export class ScanScript {
                         // console.log('name:' + element.name.escapedText);
 
                         const path = entry.moduleSpecifier.text;
-                        const fullPath = that.convertPath(path, subPath);
+                        const tmpFullPath = that.convertPath(path, subPath);
 
                         const importItem = {
                             class: element.name.escapedText,
                             path: entry.moduleSpecifier.text,
-                            fullPath: fullPath
+                            fullPath: tmpFullPath
                         };
                         importList.push(importItem);
                     }
@@ -154,8 +157,8 @@ export class ScanScript {
         const pathTail = tailArray.slice(index, tailArray.length).join('/');
         const headArray = subPath.split('/');
         const pathHead = headArray.slice(0, headArray.length - count).join('/');
-        const fullPath = pathHead + '/' + pathTail;
-        return fullPath;
+        const tmpFullPath = pathHead + '/' + pathTail;
+        return tmpFullPath;
     }
 
     private parseRoutingList(entry: any, routingList) {

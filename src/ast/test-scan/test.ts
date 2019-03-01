@@ -1,8 +1,8 @@
 import {ScanMain} from './scan-main';
 
 const projectObj = {
-    root_path: 'F:/appbuilder-um-ui',
-    project_name: 'appbuilder-um-ui'
+    root_path: 'F:/analytics-front-end_5.1',
+    project_name: 'analytics-front-end_5.1'
 };
 
 // analytics-front-end_5.1

@@ -4,7 +4,7 @@ const _ts = require("typescript");
 const fs_1 = require("fs");
 const parser_1 = require("./parser");
 let parser = new parser_1.Parser();
-let fReadName = 'C:\\Users\\tommy\\Desktop\\conch_code\\app.routing.ts';
+let fReadName = 'C:\\Users\\tommy\\Desktop\\stage.component.ts';
 let data = fs_1.readFileSync(fReadName, { encoding: 'utf-8' });
 let sourceFile = parser.parse(_ts, data, {
     experimentalAsyncFunctions: true,
@@ -74,10 +74,10 @@ sourceFile.statements.forEach((entry) => {
                     console.log('CallExpression(186):' + decoItem.expression.escapedText);
                     if (decoItem.arguments && decoItem.arguments.length > 0
                         && decoItem.arguments[0].properties && decoItem.arguments[0].properties.length > 0) {
-                        decoItem.arguments[0].properties.forEach((argumnet) => {
-                            console.log(argumnet.name.escapedText + ':' + (argumnet.initializer.text || argumnet.initializer.elements));
-                            if (argumnet.name.escapedText === 'imports') {
-                                argumnet.initializer.elements.forEach((item) => {
+                        decoItem.arguments[0].properties.forEach((argument) => {
+                            console.log(argument.name.escapedText + ':' + (argument.initializer.text || argument.initializer.elements));
+                            if (argument.name.escapedText === 'imports') {
+                                argument.initializer.elements.forEach((item) => {
                                     // CallExpression
                                     if (item.kind === 186) {
                                         const expression = item.expression;
