@@ -56,6 +56,7 @@ export class ScanMain {
 
             this.convertData(moduleMap);
             this.convertCompList(moduleMap);
+            this.convertRoutingList(moduleMap);
             writeFileSync(projectConchPath + '/s_moduleMap.json', JSON.stringify(moduleMap));
 
             const d3_data = {
@@ -86,57 +87,104 @@ export class ScanMain {
     private convertCompList(moduleMap) {
         const compFullList = moduleMap[Const.CLASS_LIST][Const.COMPONENT];
 
-        const moduleFullList = moduleMap[Const.CLASS_LIST][Const.NG_MODULE];
-        const moduleTypeMap = moduleMap[Const.TYPE_MAP][Const.NG_MODULE];
-        const compTypeMap = moduleMap[Const.TYPE_MAP][Const.COMPONENT];
         compFullList.forEach((compObj: any) => {
             if (compObj.compList) {
-
-                const curCompList = [];
 
                 const curCompMap = {};
                 compObj.compList.forEach((subCompObj: any) => {
                     curCompMap[subCompObj] = 1;
                 });
 
-                const parentModuleList = [];
-                this.getParentModuleList(moduleFullList, compObj.className, parentModuleList);
-
-                parentModuleList.forEach((parentModuleObj: any) => {
-                    parentModuleObj.importList.forEach((importForModule: any) => {
-
-                        // 在直属module中寻找引用
-                        if (compTypeMap[importForModule.className]) {
-                            if (curCompMap[importForModule.className]) {
-                                const key2 = importForModule.fullPath + '#' + importForModule.className;
-                                const curComp = moduleMap[Const.FULL_MAP][Const.COMPONENT][key2];
-                                curCompList.push(key2);
-                            }
-                        }
-
-                        // 在直属module引用打的module中寻找引用
-                        if (moduleTypeMap[importForModule.className]) {
-
-                            const key = importForModule.fullPath + '#' + importForModule.className;
-                            const curModule = moduleMap[Const.FULL_MAP][Const.NG_MODULE][key];
-
-                            if (curModule) {
-                                curModule.importList.forEach((importObj: any) => {
-                                    if (curCompMap[importObj.className]) {
-
-                                        const key2 = importObj.fullPath + '#' + importObj.className;
-                                        const curComp = moduleMap[Const.FULL_MAP][Const.COMPONENT][key2];
-                                        curCompList.push(key2);
-                                    }
-                                });
-                            }
-                        }
-                    });
-                });
+                const curClassName = compObj.className;
+                const curCompList = this.getFullKeyList(curClassName, curCompMap, moduleMap);
 
                 compObj.compListFull = curCompList;
             }
         });
+    }
+
+    private convertRoutingList(moduleMap) {
+        const compFullList = moduleMap[Const.CLASS_LIST][Const.NG_MODULE];
+
+        compFullList.forEach((compObj: any) => {
+            if (compObj.routingList) {
+
+                const curCompMap = {};
+                compObj.routingList.forEach((subCompObj: any) => {
+                    if (subCompObj.component) {
+                        curCompMap[subCompObj.component] = 1;
+                    }
+
+                    // todo 遍历一级子列表，需要改为递归
+                    if (subCompObj.children) {
+                        subCompObj.children.forEach((child: any) => {
+                            if (child.component) {
+                                curCompMap[child.component] = 1;
+                            }
+                        });
+                    }
+                });
+
+                if (curCompMap['AppPushManageComponent']) {
+                    debugger
+                }
+
+                if (curCompMap['AppPushComponent']) {
+                    debugger
+                }
+
+                const curClassName = compObj.className;
+                const curCompList = this.getFullKeyList(curClassName, curCompMap, moduleMap);
+
+                // todo 两个问题，有重复的，有缺失的
+                compObj.routingListFull = curCompList;
+            }
+        });
+    }
+
+    private getFullKeyList(curClassName, curCompMap, moduleMap) {
+
+        const moduleFullList = moduleMap[Const.CLASS_LIST][Const.NG_MODULE];
+        const moduleTypeMap = moduleMap[Const.TYPE_MAP][Const.NG_MODULE];
+        const compTypeMap = moduleMap[Const.TYPE_MAP][Const.COMPONENT];
+
+        const curCompList = [];
+
+        const parentModuleList = [];
+        this.getParentModuleList(moduleFullList, curClassName, parentModuleList);
+
+        parentModuleList.forEach((parentModuleObj: any) => {
+            parentModuleObj.importList.forEach((importForModule: any) => {
+
+                // 在直属module中寻找引用
+                if (compTypeMap[importForModule.className]) {
+                    if (curCompMap[importForModule.className]) {
+                        const key2 = importForModule.fullPath + '#' + importForModule.className;
+                        const curComp = moduleMap[Const.FULL_MAP][Const.COMPONENT][key2];
+                        curCompList.push(key2);
+                    }
+                }
+
+                // 在直属module引用打的module中寻找引用
+                if (moduleTypeMap[importForModule.className]) {
+
+                    const key = importForModule.fullPath + '#' + importForModule.className;
+                    const curModule = moduleMap[Const.FULL_MAP][Const.NG_MODULE][key];
+
+                    if (curModule) {
+                        curModule.importList.forEach((importObj: any) => {
+                            if (curCompMap[importObj.className]) {
+
+                                const key2 = importObj.fullPath + '#' + importObj.className;
+                                const curComp = moduleMap[Const.FULL_MAP][Const.COMPONENT][key2];
+                                curCompList.push(key2);
+                            }
+                        });
+                    }
+                }
+            });
+        });
+        return curCompList;
     }
 
     private getParentModuleList(moduleFullList, className: any, parentModuleList) {

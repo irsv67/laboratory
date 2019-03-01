@@ -48,22 +48,7 @@ export class ControlBusiness {
         const json_data = readFileSync(projectConchPath + '/s_moduleMap.json', {encoding: 'utf-8'});
         const moduleMap = JSON.parse(json_data);
 
-        const parentMap = {};
-
-        for (let module in moduleMap[Const.NG_MODULE]) {
-            const moduleList = moduleMap[Const.NG_MODULE][module];
-            moduleList.forEach((moduleObj: any) => {
-                if (moduleObj.rootRouting) {
-
-                    moduleObj.routingList.forEach((parentItem: any) => {
-                        if (parentItem.loadChildren) {
-                            const key = parentItem.loadChildren.split('#')[1];
-                            parentMap[key] = parentItem.path;
-                        }
-                    });
-                }
-            });
-        }
+        const moduleTypeMap = moduleMap[Const.TYPE_MAP][Const.NG_MODULE];
 
         const curNodeFolder = {
             'title': projectObj.project_name,
@@ -73,37 +58,48 @@ export class ControlBusiness {
             'children': []
         };
 
-        const routingList = [];
+        const moduleList = moduleMap[Const.CLASS_LIST][Const.NG_MODULE];
+        moduleList.forEach((moduleObj: any) => {
+            if (moduleObj.rootRouting) {
+                moduleObj.routingList.forEach((parentItem: any) => {
+                    if (parentItem.loadChildren) {
 
-        for (const module in moduleMap[Const.NG_MODULE]) {
+                        const lazyRootModule = moduleMap[Const.FULL_MAP][Const.NG_MODULE][parentItem.loadChildren];
 
-            const moduleList = moduleMap[Const.NG_MODULE][module];
-            moduleList.forEach((moduleObj: any) => {
-                if (!moduleObj.rootRouting) {
+                        console.log(lazyRootModule.className);
 
-                    const keyChange = key.split('Routing')[0] + key.split('Routing')[1];
+                        let routingList = [];
+                        if (lazyRootModule.routingList) {
+                            routingList = routingList.concat(lazyRootModule.routingList);
+                        }
 
-                    const parentPath = parentMap[keyChange];
+                        lazyRootModule.importList.forEach((importForModule: any) => {
+                            if (moduleTypeMap[importForModule.className]) {
+                                const key = importForModule.fullPath + '#' + importForModule.className;
+                                const curModule = moduleMap[Const.FULL_MAP][Const.NG_MODULE][key];
 
-                    const curNode = {
-                        title: parentPath,
-                        key: parentPath,
-                        'expanded': true,
-                        isLeaf: true,
-                        'icon': 'anticon anticon-file',
-                        'children': []
-                    };
+                                if (curModule.routingList) {
+                                    routingList = routingList.concat(curModule.routingList);
+                                }
+                            }
+                        });
 
-                    if (routingMap[key] && routingMap[key].length > 0) {
-                        curNode.isLeaf = false;
-                        curNode.icon = 'anticon anticon-folder';
-                        this.weaveRouterListRecu(parentPath, routingMap[key], curNode);
+                        const curNode = {
+                            title: parentItem.path,
+                            key: parentItem.path,
+                            'expanded': true,
+                            isLeaf: true,
+                            'icon': 'anticon anticon-file',
+                            'children': []
+                        };
+
+                        this.weaveRouterListRecu(parentItem.path, routingList, curNode);
+
+                        curNodeFolder.children.push(curNode)
                     }
-
-                    curNodeFolder.children.push(curNode);
-                }
-            });
-        }
+                });
+            }
+        });
 
         return curNodeFolder;
     }

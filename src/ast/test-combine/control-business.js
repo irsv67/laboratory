@@ -31,20 +31,7 @@ class ControlBusiness {
         }
         const json_data = fs_1.readFileSync(projectConchPath + '/s_moduleMap.json', { encoding: 'utf-8' });
         const moduleMap = JSON.parse(json_data);
-        const parentMap = {};
-        for (let module in moduleMap[const_1.Const.NG_MODULE]) {
-            const moduleList = moduleMap[const_1.Const.NG_MODULE][module];
-            moduleList.forEach((moduleObj) => {
-                if (moduleObj.rootRouting) {
-                    moduleObj.routingList.forEach((parentItem) => {
-                        if (parentItem.loadChildren) {
-                            const key = parentItem.loadChildren.split('#')[1];
-                            parentMap[key] = parentItem.path;
-                        }
-                    });
-                }
-            });
-        }
+        const moduleTypeMap = moduleMap[const_1.Const.TYPE_MAP][const_1.Const.NG_MODULE];
         const curNodeFolder = {
             'title': projectObj.project_name,
             'key': projectObj.project_name,
@@ -52,30 +39,40 @@ class ControlBusiness {
             'icon': 'anticon anticon-credit-card',
             'children': []
         };
-        const routingList = [];
-        for (const module in moduleMap[const_1.Const.NG_MODULE]) {
-            const moduleList = moduleMap[const_1.Const.NG_MODULE][module];
-            moduleList.forEach((moduleObj) => {
-                if (!moduleObj.rootRouting) {
-                    const keyChange = key.split('Routing')[0] + key.split('Routing')[1];
-                    const parentPath = parentMap[keyChange];
-                    const curNode = {
-                        title: parentPath,
-                        key: parentPath,
-                        'expanded': true,
-                        isLeaf: true,
-                        'icon': 'anticon anticon-file',
-                        'children': []
-                    };
-                    if (routingMap[key] && routingMap[key].length > 0) {
-                        curNode.isLeaf = false;
-                        curNode.icon = 'anticon anticon-folder';
-                        this.weaveRouterListRecu(parentPath, routingMap[key], curNode);
+        const moduleList = moduleMap[const_1.Const.CLASS_LIST][const_1.Const.NG_MODULE];
+        moduleList.forEach((moduleObj) => {
+            if (moduleObj.rootRouting) {
+                moduleObj.routingList.forEach((parentItem) => {
+                    if (parentItem.loadChildren) {
+                        const lazyRootModule = moduleMap[const_1.Const.FULL_MAP][const_1.Const.NG_MODULE][parentItem.loadChildren];
+                        console.log(lazyRootModule.className);
+                        let routingList = [];
+                        if (lazyRootModule.routingList) {
+                            routingList = routingList.concat(lazyRootModule.routingList);
+                        }
+                        lazyRootModule.importList.forEach((importForModule) => {
+                            if (moduleTypeMap[importForModule.className]) {
+                                const key = importForModule.fullPath + '#' + importForModule.className;
+                                const curModule = moduleMap[const_1.Const.FULL_MAP][const_1.Const.NG_MODULE][key];
+                                if (curModule.routingList) {
+                                    routingList = routingList.concat(curModule.routingList);
+                                }
+                            }
+                        });
+                        const curNode = {
+                            title: parentItem.path,
+                            key: parentItem.path,
+                            'expanded': true,
+                            isLeaf: true,
+                            'icon': 'anticon anticon-file',
+                            'children': []
+                        };
+                        this.weaveRouterListRecu(parentItem.path, routingList, curNode);
+                        curNodeFolder.children.push(curNode);
                     }
-                    curNodeFolder.children.push(curNode);
-                }
-            });
-        }
+                });
+            }
+        });
         return curNodeFolder;
     }
     // =====================================
