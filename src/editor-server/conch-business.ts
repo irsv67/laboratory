@@ -49,7 +49,7 @@ export class ConchBusiness {
             }
         }
 
-        const sql = 'SELECT * from ' + tableName + whereClause;
+        let sql = 'SELECT * from ' + tableName + whereClause;
 
         if (tableName === 'ud_comp') {
             sql += ' order by order_index';

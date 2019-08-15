@@ -27,7 +27,7 @@ class ConchBusiness {
                 whereClause += " and " + key + " = '" + queryObj[key] + "'";
             }
         }
-        const sql = 'SELECT * from ' + tableName + whereClause;
+        let sql = 'SELECT * from ' + tableName + whereClause;
         if (tableName === 'ud_comp') {
             sql += ' order by order_index';
         }
