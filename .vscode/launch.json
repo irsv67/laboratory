@@ -7,6 +7,12 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "app3",
+            "program": "${workspaceFolder}/src/express/app3.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "genFile6",
             "program": "${workspaceFolder}/src/generate/genFile6.js"
         },
