@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // mysql 视图模拟sql模板
 const mysql_1 = require("mysql");
 const RouterService_1 = require("./RouterService");
+const LayoutService_1 = require("./LayoutService");
 const express = require('express');
 class MainService {
     constructor() {
@@ -14,16 +15,20 @@ class MainService {
         });
         this.connection.connect();
         this.router = express.Router();
-        this.routerService = new RouterService_1.RouterService();
-        this.routerService.initRouter(this.router, this.connection);
+        const routerService = new RouterService_1.RouterService();
+        routerService.initRouter(this.router, this.connection);
+        const layoutService = new LayoutService_1.LayoutService();
+        layoutService.initRouter(this.router, this.connection);
     }
     start() {
         let app = express();
-        app.use('/report-api', this.router);
+        const bodyParser = require('body-parser');
+        app.use(bodyParser.json());
+        app.use('/report-local', this.router);
         let server = app.listen(3000, function () {
             let host = '127.0.0.1';
             let port = server.address().port;
-            console.log('server is listening at http://%s:%s/report-api', host, port);
+            console.log('server is listening at http://%s:%s/report-local', host, port);
         });
     }
 }

@@ -2,13 +2,14 @@
 // mysql 视图模拟sql模板
 import { createConnection } from "mysql";
 import { RouterService } from "./RouterService";
+import { LayoutService } from "./LayoutService";
+
 const express = require('express');
 
 export class MainService {
 
     connection: any;
     router: any;
-    routerService: any;
 
     constructor() {
         this.connection = createConnection({
@@ -21,19 +22,26 @@ export class MainService {
 
         this.router = express.Router();
 
-        this.routerService = new RouterService();
-        this.routerService.initRouter(this.router, this.connection);
+        const routerService = new RouterService();
+        routerService.initRouter(this.router, this.connection);
+
+        const layoutService = new LayoutService();
+        layoutService.initRouter(this.router, this.connection);
+
     }
 
     start() {
         let app = express();
-        app.use('/report-api', this.router);
+        const bodyParser = require('body-parser');
+        app.use(bodyParser.json());
+
+        app.use('/report-local', this.router);
 
         let server = app.listen(3000, function () {
             let host = '127.0.0.1';
             let port = server.address().port;
 
-            console.log('server is listening at http://%s:%s/report-api', host, port);
+            console.log('server is listening at http://%s:%s/report-local', host, port);
         });
     }
 }
