@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mysql_1 = require("mysql");
 const RouterService_1 = require("./RouterService");
 const LayoutService_1 = require("./LayoutService");
+const DataSetService_1 = require("./DataSetService");
 const express = require('express');
 class MainService {
     constructor() {
@@ -19,6 +20,8 @@ class MainService {
         routerService.initRouter(this.router, this.connection);
         const layoutService = new LayoutService_1.LayoutService();
         layoutService.initRouter(this.router, this.connection);
+        const dataSetService = new DataSetService_1.DataSetService();
+        dataSetService.initRouter(this.router, this.connection);
     }
     start() {
         let app = express();

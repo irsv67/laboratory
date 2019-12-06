@@ -1,12 +1,9 @@
 
 import * as uuid from 'node-uuid';
-import { DataSetService } from './DataSetService'
 
 export class LayoutService {
 
-    dataSetService: DataSetService;
     constructor() {
-        this.dataSetService = new DataSetService();
     }
 
     initRouter(router, connection) {
@@ -125,12 +122,48 @@ export class LayoutService {
             });
         });
 
+        router.post('/getEnumList', function (req, res) {
+            const reqParam = req.body;
+
+            let dimStr = reqParam.dimensions.map(item => {
+                return item.field
+            }).join(', ')
+
+            const page = reqParam.limit.page;
+            const pageSize = reqParam.limit.pageSize;
+            const limitStr = 'limit ' + (page - 1) * pageSize + ', ' + pageSize;
+
+            that.getDataSetById(reqParam.cubeId, connection, (retObj) => {
+                const sql = `select distinct ${dimStr} from qe_data.${retObj.tableName} 
+                where 1 = 1 ${limitStr}`;
+
+                connection.query(sql, function (error, results, fields) {
+                    if (error) throw error;
+                    console.log(sql);
+                    res.send({
+                        data: results,
+                        result: {
+                            message: `查询成功：共${results.length}条，返回${results.length}条`,
+                            sql: sql,
+                            status: true
+                        },
+                        success: true
+                    });
+                });
+            })
+        });
+
         router.post('/getChartData', function (req, res) {
             const reqParam = req.body;
 
-            const dimStr = reqParam.dimensions.map(item => {
+            let dimStr = reqParam.dimensions.map(item => {
                 return item.field
             }).join(', ')
+
+            if (dimStr) {
+                dimStr += ',';
+            }
+
             const metricStr = reqParam.metrics.map(item => {
                 if (item.aggregator) {
                     return `${item.aggregator}(${item.field}) as ${item.field}`
@@ -139,18 +172,21 @@ export class LayoutService {
                 }
             }).join(', ')
 
-            const groupStr = reqParam.groupBy.map(item => {
+            let groupStr = reqParam.groupBy.map(item => {
                 return item.field
             }).join(', ')
 
+            if (groupStr) {
+                groupStr = 'group by ' + groupStr;
+            }
+
             const page = reqParam.limit.page;
             const pageSize = reqParam.limit.pageSize;
-            const limitStr = (page - 1) * pageSize + ', ' + pageSize;
+            const limitStr = 'limit ' + (page - 1) * pageSize + ', ' + pageSize;
 
             that.getDataSetById(reqParam.cubeId, connection, (retObj) => {
-                const sql = `select ${dimStr}, ${metricStr} from qe_data.${retObj.tableName} 
-                where 1 = 1 
-                group by ${groupStr} limit ${limitStr}`;
+                const sql = `select ${dimStr} ${metricStr} from qe_data.${retObj.tableName} 
+                where 1 = 1 ${groupStr} ${limitStr}`;
 
                 connection.query(sql, function (error, results, fields) {
                     if (error) throw error;
