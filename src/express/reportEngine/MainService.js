@@ -9,10 +9,10 @@ const express = require('express');
 class MainService {
     constructor() {
         this.connection = mysql_1.createConnection({
-            host: '172.23.6.215',
+            host: '127.0.0.1',
             database: 'data_report',
-            user: 'meta',
-            password: 'meta2015'
+            user: 'root',
+            password: 'root'
         });
         this.connection.connect();
         this.router = express.Router();

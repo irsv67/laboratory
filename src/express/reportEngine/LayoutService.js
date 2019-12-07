@@ -119,7 +119,7 @@ class LayoutService {
             const pageSize = reqParam.limit.pageSize;
             const limitStr = 'limit ' + (page - 1) * pageSize + ', ' + pageSize;
             that.getDataSetById(reqParam.cubeId, connection, (retObj) => {
-                const sql = `select distinct ${dimStr} from qe_data.${retObj.tableName} 
+                const sql = `select distinct ${dimStr} from qe_data.${retObj.physicalMetaObjectName} 
                 where 1 = 1 ${limitStr}`;
                 connection.query(sql, function (error, results, fields) {
                     if (error)
@@ -163,34 +163,71 @@ class LayoutService {
             const pageSize = reqParam.limit.pageSize;
             const limitStr = 'limit ' + (page - 1) * pageSize + ', ' + pageSize;
             that.getDataSetById(reqParam.cubeId, connection, (retObj) => {
-                const sql = `select ${dimStr} ${metricStr} from qe_data.${retObj.tableName} 
-                where 1 = 1 ${groupStr} ${limitStr}`;
-                connection.query(sql, function (error, results, fields) {
-                    if (error)
-                        throw error;
-                    console.log(sql);
-                    res.send({
-                        data: results,
-                        result: {
-                            message: `查询成功：共${results.length}条，返回${results.length}条`,
-                            sql: sql,
-                            status: true
+                if (retObj.dataSourceType === 'RESTAPI') {
+                    var request = require("request");
+                    request({
+                        url: retObj.dataSourceUrl + '/query',
+                        method: "post",
+                        json: true,
+                        headers: {
+                            "content-type": "application/json",
                         },
-                        success: true
+                        body: reqParam
+                    }, function (error, response, body) {
+                        if (!error && response.statusCode == 200) {
+                            res.send(body);
+                        }
                     });
-                });
+                }
+                else {
+                    const sql = `select ${dimStr} ${metricStr} from qe_data.${retObj.physicalMetaObjectName} 
+                    where 1 = 1 ${groupStr} ${limitStr}`;
+                    connection.query(sql, function (error, results, fields) {
+                        if (error)
+                            throw error;
+                        console.log(sql);
+                        res.send({
+                            data: results,
+                            result: {
+                                message: `查询成功：共${results.length}条，返回${results.length}条`,
+                                sql: sql,
+                                status: true
+                            },
+                            success: true
+                        });
+                    });
+                }
             });
         });
     }
     getDataSetById(dsId, connection, callback) {
-        const preSql = `select a.*, b.name as tableName from TD_DR_META_OBJECT a, TD_DR_PHYSICAL_META_OBJECT b 
-        where a.physical_meta_object_id = b.id and a.id = ${dsId}`;
+        const that = this;
+        const preSql = `select a.*, c.type as dataSourceType, c.attr1 as dataSourceUrl 
+        from TD_DR_META_OBJECT a, TD_DR_DATA_SOURCE c 
+        where a.datasource_id = c.id and a.id = ${dsId}`;
         connection.query(preSql, function (error, results, fields) {
             if (error)
                 throw error;
             console.log(preSql);
-            callback(results[0]);
+            const list = that.convertResponse(results);
+            callback(list[0]);
         });
+    }
+    convertResponse(results) {
+        const list = results.map(item => {
+            const tmpObj = {};
+            for (const key in item) {
+                if (item.hasOwnProperty(key)) {
+                    const value = item[key];
+                    const keyNew = key.replace(/\_(\w)/g, function (all, letter) {
+                        return letter.toUpperCase();
+                    });
+                    tmpObj[keyNew] = value;
+                }
+            }
+            return tmpObj;
+        });
+        return list;
     }
 }
 exports.LayoutService = LayoutService;
