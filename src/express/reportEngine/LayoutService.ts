@@ -182,6 +182,9 @@ export class LayoutService {
                 groupStr = 'group by ' + groupStr;
             }
 
+            const orderObj = (reqParam.orderBy && reqParam.orderBy.length > 0) ? reqParam.orderBy[0] : null;
+            const orderStr = orderObj ? `order by ${orderObj.field} ${orderObj.order}` : '';
+
             const page = reqParam.limit.page;
             const pageSize = reqParam.limit.pageSize;
             const limitStr = 'limit ' + (page - 1) * pageSize + ', ' + pageSize;
@@ -204,7 +207,7 @@ export class LayoutService {
                     });
                 } else {
                     const sql = `select ${dimStr} ${metricStr} from qe_data.${retObj.physicalMetaObjectName} 
-                    where 1 = 1 ${groupStr} ${limitStr}`;
+                    where 1 = 1 ${groupStr} ${orderStr} ${limitStr}`;
 
                     connection.query(sql, function (error, results, fields) {
                         if (error) throw error;
