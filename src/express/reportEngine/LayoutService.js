@@ -39,6 +39,7 @@ class LayoutService {
                 if (error)
                     throw error;
                 console.log(sql);
+                // const list = that.convertResponse(results);
                 res.send({
                     code: 200,
                     data: {
@@ -102,6 +103,7 @@ class LayoutService {
                 if (error)
                     throw error;
                 console.log(sql);
+                // const list = that.convertResponse(results);
                 const retObj = results.length > 0 ? results[0] : {};
                 res.send({
                     code: 200,

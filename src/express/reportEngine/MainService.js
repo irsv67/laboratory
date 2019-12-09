@@ -5,6 +5,7 @@ const mysql_1 = require("mysql");
 const RouterService_1 = require("./RouterService");
 const LayoutService_1 = require("./LayoutService");
 const DataSetService_1 = require("./DataSetService");
+const DataSourceService_1 = require("./DataSourceService");
 const express = require('express');
 class MainService {
     constructor() {
@@ -22,6 +23,8 @@ class MainService {
         layoutService.initRouter(this.router, this.connection);
         const dataSetService = new DataSetService_1.DataSetService();
         dataSetService.initRouter(this.router, this.connection);
+        const dataSourceService = new DataSourceService_1.DataSourceService();
+        dataSourceService.initRouter(this.router, this.connection);
     }
     start() {
         let app = express();

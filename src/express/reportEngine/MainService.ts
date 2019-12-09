@@ -4,6 +4,7 @@ import { createConnection } from "mysql";
 import { RouterService } from "./RouterService";
 import { LayoutService } from "./LayoutService";
 import { DataSetService } from "./DataSetService";
+import { DataSourceService } from "./DataSourceService";
 
 const express = require('express');
 
@@ -31,6 +32,9 @@ export class MainService {
 
         const dataSetService = new DataSetService();
         dataSetService.initRouter(this.router, this.connection);
+
+        const dataSourceService = new DataSourceService();
+        dataSourceService.initRouter(this.router, this.connection);
 
     }
 
