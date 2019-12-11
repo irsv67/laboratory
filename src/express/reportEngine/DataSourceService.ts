@@ -30,7 +30,7 @@ export class DataSourceService {
         });
 
         // update
-        router.put('/createDataSource', function (req, res) {
+        router.put('/updateDataSource', function (req, res) {
             const user = req.headers['dr-user'];
             const tenant = req.headers['dr-tenant'];
             const paramObj = req.body;

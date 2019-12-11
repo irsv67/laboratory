@@ -52,7 +52,7 @@ export class DataSetService {
         });
 
         // update
-        router.put('/createMetadata', function (req, res) {
+        router.put('/updateMetadata', function (req, res) {
             const user = req.headers['dr-user'];
             const tenant = req.headers['dr-tenant'];
             const paramObj = req.body;
