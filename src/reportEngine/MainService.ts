@@ -1,10 +1,13 @@
 
 // mysql 视图模拟sql模板
 import { createConnection } from "mysql";
-import { RouterService } from "./RouterService";
-import { LayoutService } from "./LayoutService";
-import { DataSetService } from "./DataSetService";
-import { DataSourceService } from "./DataSourceService";
+import { RouterService } from "./service/RouterService";
+import { LayoutService } from "./service/LayoutService";
+import { DataSetService } from "./service/DataSetService";
+import { DataSourceService } from "./service/DataSourceService";
+import { DataModelService } from "./service/DataModelService";
+
+import { BaseRouter } from "./BaseRouter";
 
 const express = require('express');
 
@@ -35,6 +38,12 @@ export class MainService {
 
         const dataSourceService = new DataSourceService();
         dataSourceService.initRouter(this.router, this.connection);
+
+        const dataModelService = new DataModelService();
+        dataModelService.initRouter(this.router, this.connection);
+
+        const baseRouter = new BaseRouter();
+        baseRouter.initRouter(this.router, this.connection);
 
     }
 

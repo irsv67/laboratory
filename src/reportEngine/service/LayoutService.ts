@@ -6,6 +6,24 @@ export class LayoutService {
     constructor() {
     }
 
+    retrieveLayoutList(connection, req, callback) {
+        let productId = req.query.productId;
+        const sql = `SELECT * FROM TD_DR_AE_CHART WHERE status = 0 and product_id = ` + productId + ' order by createTime desc';
+        connection.query(sql, function (error, results, fields) {
+            if (error) throw error;
+            console.log(sql);
+            // const list = that.convertResponse(results);
+            debugger
+            callback({
+                code: 200,
+                data: {
+                    list: results
+                },
+                msg: '查询成功'
+            });
+        });
+    }
+
     initRouter(router, connection) {
         const that = this;
 
@@ -38,22 +56,22 @@ export class LayoutService {
             });
         });
 
-        router.get('/retrieveLayoutList', function (req, res) {
-            let productId = req.query.productId;
-            const sql = `SELECT * FROM TD_DR_AE_CHART WHERE status = 0 and product_id = ` + productId + ' order by createTime desc';
-            connection.query(sql, function (error, results, fields) {
-                if (error) throw error;
-                console.log(sql);
-                // const list = that.convertResponse(results);
-                res.send({
-                    code: 200,
-                    data: {
-                        list: results
-                    },
-                    msg: '查询成功'
-                });
-            });
-        });
+        // router.get('/retrieveLayoutList', function (req, res) {
+        //     let productId = req.query.productId;
+        //     const sql = `SELECT * FROM TD_DR_AE_CHART WHERE status = 0 and product_id = ` + productId + ' order by createTime desc';
+        //     connection.query(sql, function (error, results, fields) {
+        //         if (error) throw error;
+        //         console.log(sql);
+        //         // const list = that.convertResponse(results);
+        //         res.send({
+        //             code: 200,
+        //             data: {
+        //                 list: results
+        //             },
+        //             msg: '查询成功'
+        //         });
+        //     });
+        // });
 
         router.post('/updateLayout', function (req, res) {
             const productId = req.query.productId;

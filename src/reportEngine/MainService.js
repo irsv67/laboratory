@@ -2,10 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 // mysql 视图模拟sql模板
 const mysql_1 = require("mysql");
-const RouterService_1 = require("./RouterService");
-const LayoutService_1 = require("./LayoutService");
-const DataSetService_1 = require("./DataSetService");
-const DataSourceService_1 = require("./DataSourceService");
+const RouterService_1 = require("./service/RouterService");
+const LayoutService_1 = require("./service/LayoutService");
+const DataSetService_1 = require("./service/DataSetService");
+const DataSourceService_1 = require("./service/DataSourceService");
+const DataModelService_1 = require("./service/DataModelService");
+const BaseRouter_1 = require("./BaseRouter");
 const express = require('express');
 class MainService {
     constructor() {
@@ -25,6 +27,10 @@ class MainService {
         dataSetService.initRouter(this.router, this.connection);
         const dataSourceService = new DataSourceService_1.DataSourceService();
         dataSourceService.initRouter(this.router, this.connection);
+        const dataModelService = new DataModelService_1.DataModelService();
+        dataModelService.initRouter(this.router, this.connection);
+        const baseRouter = new BaseRouter_1.BaseRouter();
+        baseRouter.initRouter(this.router, this.connection);
     }
     start() {
         let app = express();
