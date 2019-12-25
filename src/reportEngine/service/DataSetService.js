@@ -83,7 +83,7 @@ class DataSetService {
     }
     deleteMetadata(connection, req, callback) {
         const that = this;
-        const metaId = req.params.metaId;
+        const metaId = req.query.metaId;
         const preSql = `delete from TD_DR_META_ATTRIBUTE where object_id = ${metaId}`;
         connection.query(preSql, function (error, results, fields) {
             if (error)
@@ -103,7 +103,7 @@ class DataSetService {
     }
     findMetaById(connection, req, callback) {
         const that = this;
-        const metaId = req.params.metaId;
+        const metaId = req.query.metaId;
         const preSql = `select a.*, 
         c.id as dataSourceId, c.name as dataSourceName, c.type as dataSourceType 
         from TD_DR_META_OBJECT a, TD_DR_DATA_SOURCE c 
@@ -133,7 +133,7 @@ class DataSetService {
     }
     getMetaAttrList(connection, req, callback) {
         const that = this;
-        const cubeId = req.params.cubeId;
+        const cubeId = req.query.cubeId;
         const preSql = `select * from TD_DR_META_ATTRIBUTE where object_id = ${cubeId}`;
         connection.query(preSql, function (error, results, fields) {
             if (error)

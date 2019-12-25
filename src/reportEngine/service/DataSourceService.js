@@ -73,7 +73,7 @@ class DataSourceService {
         });
     }
     deleteDataSource(connection, req, callback) {
-        const dsId = req.params.dsId;
+        const dsId = req.query.dsId;
         const preSql = `delete from TD_DR_DATA_SOURCE where id = ${dsId}`;
         connection.query(preSql, function (error, results, fields) {
             if (error)

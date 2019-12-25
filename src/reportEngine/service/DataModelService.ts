@@ -27,7 +27,7 @@ export class DataModelService {
     }
 
     exportTable(connection, req, callback) {
-        const tableName = req.params.tableName;
+        const tableName = req.query.tableName;
 
         const sql = `SELECT * FROM qe_data.${tableName} WHERE 1 = 1 limit 1, 10000`;
         connection.query(sql, function (error, results, fields) {

@@ -97,7 +97,7 @@ class LayoutService {
         });
     }
     getLayoutById(connection, req, callback) {
-        let layoutId = req.params.layoutId;
+        let layoutId = req.query.layoutId;
         const sql = `SELECT * FROM TD_DR_AE_CHART WHERE status = 0 and code = '${layoutId}'`;
         connection.query(sql, function (error, results, fields) {
             if (error)

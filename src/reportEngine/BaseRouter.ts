@@ -12,6 +12,8 @@ export class BaseRouter {
 
     nodeMap: {};
 
+    paramMap: {};
+
     methodMap: {};
 
     constructor() {
@@ -80,31 +82,60 @@ export class BaseRouter {
 
         this.nodeMap = {
             getModelTables: '/getModelTables',
-            exportTable: '/exportTable/:tableName',
+            exportTable: '/exportTable',
 
             createDataSource: '/createDataSource',
             updateDataSource: '/updateDataSource',
             retrieveDataSourceList: '/retrieveDataSourceList',
-            deleteDataSource: '/deleteDataSource/:dsId',
+            deleteDataSource: '/deleteDataSource',
 
             retrieveMetadataList: '/retrieveMetadataList',
-            findMetaById: '/findMetaById/:metaId',
+            findMetaById: '/findMetaById',
             createMetadata: '/createMetadata',
             updateMetadata: '/updateMetadata',
-            deleteMetadata: '/deleteMetadata/:metaId',
+            deleteMetadata: '/deleteMetadata',
 
-            physicalMetaObjects: '/physicalMetaObjects/:dsId',
-            physicalMetaAttributes: '/physicalMetaAttributes/:dsId',
+            physicalMetaObjects: '/physicalMetaObjects',
+            physicalMetaAttributes: '/physicalMetaAttributes',
 
             createLayout: '/createLayout',
             retrieveLayoutList: '/retrieveLayoutList',
             updateLayout: '/updateLayout',
             deleteLayout: '/deleteLayout',
-            getLayoutById: '/getLayoutById/:layoutId',
+            getLayoutById: '/getLayoutById',
 
             getEnumList: '/getEnumList',
-            getMetaAttrList: '/getMetaAttrList/:cubeId',
+            getMetaAttrList: '/getMetaAttrList',
             getData: '/getData',
+        };
+
+        this.paramMap = {
+            getModelTables: '',
+            exportTable: '&tableName=:tableName',
+
+            createDataSource: '',
+            updateDataSource: '',
+            retrieveDataSourceList: '&orderBy=createTime&order=desc',
+            deleteDataSource: '&dsId=:dsId',
+
+            retrieveMetadataList: '&orderBy=createTime&order=desc&search=:search',
+            findMetaById: '&metaId=:metaId',
+            createMetadata: '',
+            updateMetadata: '',
+            deleteMetadata: '&metaId=:metaId',
+
+            physicalMetaObjects: '&dsId=:dsId',
+            physicalMetaAttributes: '&dsId=:dsId',
+
+            createLayout: '&productId=:productId',
+            retrieveLayoutList: '&orderBy=createTime&order=desc&productId=:productId',
+            updateLayout: '&productId=:productId',
+            deleteLayout: '&enable=:enable',
+            getLayoutById: '&layoutId=:layoutId',
+
+            getEnumList: '',
+            getMetaAttrList: '&cubeId=:cubeId',
+            getData: '',
         };
 
         this.methodMap = {

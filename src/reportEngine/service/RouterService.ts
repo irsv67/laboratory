@@ -61,7 +61,7 @@ export class RouterService {
 
     physicalMetaAttributes(connection, req, callback) {
         const that = this;
-        const dsId = req.params.dsId;
+        const dsId = req.query.dsId;
         const tableName = req.body.physicalMetaObjectName;
 
         if (tableName !== 'queryMetadata') {
