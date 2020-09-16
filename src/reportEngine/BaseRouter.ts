@@ -10,10 +10,6 @@ export class BaseRouter {
 
     funcMap: {};
 
-    nodeMap: {};
-
-    paramMap: {};
-
     methodMap: {};
 
     constructor() {
@@ -80,64 +76,6 @@ export class BaseRouter {
             getData: layoutService.getData,
         };
 
-        this.nodeMap = {
-            getModelTables: '/getModelTables',
-            exportTable: '/exportTable',
-
-            createDataSource: '/createDataSource',
-            updateDataSource: '/updateDataSource',
-            retrieveDataSourceList: '/retrieveDataSourceList',
-            deleteDataSource: '/deleteDataSource',
-
-            retrieveMetadataList: '/retrieveMetadataList',
-            findMetaById: '/findMetaById',
-            createMetadata: '/createMetadata',
-            updateMetadata: '/updateMetadata',
-            deleteMetadata: '/deleteMetadata',
-
-            physicalMetaObjects: '/physicalMetaObjects',
-            physicalMetaAttributes: '/physicalMetaAttributes',
-
-            createLayout: '/createLayout',
-            retrieveLayoutList: '/retrieveLayoutList',
-            updateLayout: '/updateLayout',
-            deleteLayout: '/deleteLayout',
-            getLayoutById: '/getLayoutById',
-
-            getEnumList: '/getEnumList',
-            getMetaAttrList: '/getMetaAttrList',
-            getData: '/getData',
-        };
-
-        this.paramMap = {
-            getModelTables: '',
-            exportTable: '&tableName=:tableName',
-
-            createDataSource: '',
-            updateDataSource: '',
-            retrieveDataSourceList: '&orderBy=createTime&order=desc',
-            deleteDataSource: '&dsId=:dsId',
-
-            retrieveMetadataList: '&orderBy=createTime&order=desc&search=:search',
-            findMetaById: '&metaId=:metaId',
-            createMetadata: '',
-            updateMetadata: '',
-            deleteMetadata: '&metaId=:metaId',
-
-            physicalMetaObjects: '&dsId=:dsId',
-            physicalMetaAttributes: '&dsId=:dsId',
-
-            createLayout: '&productId=:productId',
-            retrieveLayoutList: '&orderBy=createTime&order=desc&productId=:productId',
-            updateLayout: '&productId=:productId',
-            deleteLayout: '&enable=:enable',
-            getLayoutById: '&layoutId=:layoutId',
-
-            getEnumList: '',
-            getMetaAttrList: '&cubeId=:cubeId',
-            getData: '',
-        };
-
         this.methodMap = {
             getModelTables: 'get',
             exportTable: 'get',
@@ -173,7 +111,7 @@ export class BaseRouter {
         for (const key in this.funcMap) {
             if (this.funcMap.hasOwnProperty(key)) {
                 const func = this.funcMap[key];
-                const url = this.nodeMap[key];
+                const url = '/' + key;
                 const method = this.methodMap[key];
 
                 const funcOuter = (req, res) => {
